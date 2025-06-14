@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password      String
+  profilePicUrl String?
+  createdAt     DateTime @default(now())
+
+  messages         Message[]
+  reads            MessageRead[]
+  inboxMemberships InboxMember[]
+}
+
+model Inbox {
+  id            Int       @id @default(autoincrement())
+  isGroup       Boolean   @default(false)
+  name          String? // for group name
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  messages Message[]
+  members  InboxMember[]
+}
+
+model InboxMember {
+  id       Int      @id @default(autoincrement())
+  inboxId  Int
+  userId   Int
+  joinedAt DateTime @default(now())
+
+  inbox Inbox @relation(fields: [inboxId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([inboxId, userId])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  inboxId   Int
+  senderId  Int?
+  content   String?
+  mediaUrl  String?
+  mediaType String? // e.g., 'image', 'video', 'file'
+  sentAt    DateTime @default(now())
+
+  inbox  Inbox @relation(fields: [inboxId], references: [id], onDelete: Cascade)
+  sender User? @relation(fields: [senderId], references: [id], onDelete: SetNull)
+
+  reads MessageRead[]
+}
+
+model MessageRead {
+  id        Int      @id @default(autoincrement())
+  messageId Int
+  userId    Int
+  readAt    DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+}
