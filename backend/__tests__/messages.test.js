@@ -56,3 +56,28 @@ describe("Message tests", () => {
     expect(res.text).toMatch("Message sent successfully");
   });
 });
+
+describe("inbox tests", () => {
+  it("creates an inbox correctly", async () => {
+    const res = await request(app)
+      .post("/inbox")
+      .set("Content-Type", "application/json")
+      .send({
+        name: "Inbox Test",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Inbox created successfully");
+  });
+  it("Error missing inbox name", async () => {
+    const res = await request(app)
+      .post("/inbox")
+      .set("Content-Type", "application/json")
+      .send({
+        name: "",
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch("Inbox name missing");
+  });
+});
