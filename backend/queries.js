@@ -21,3 +21,31 @@ export async function findUserName(username) {
     where: { username },
   });
 }
+
+export async function createNewMsg(content, senderId, inboxId) {
+  await prisma.message.create({
+    data: {
+      content,
+      mediaUrl: null,
+      senderId,
+      inboxId,
+    },
+  });
+}
+
+export async function createNewPrivateInbox(name) {
+  await prisma.inbox.create({
+    data: {
+      name,
+    },
+  });
+}
+
+export async function addUserToInbox(inboxId, userId) {
+  await prisma.inboxMember.create({
+    data: {
+      userId,
+      inboxId,
+    },
+  });
+}

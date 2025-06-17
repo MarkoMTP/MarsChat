@@ -57,7 +57,7 @@ describe("Message tests", () => {
   });
 });
 
-describe("inbox tests", () => {
+describe("Inbox Tests", () => {
   it("creates an inbox correctly", async () => {
     const res = await request(app)
       .post("/inbox")
@@ -79,5 +79,31 @@ describe("inbox tests", () => {
 
     expect(res.status).toBe(400);
     expect(res.text).toMatch("Inbox name missing");
+  });
+});
+
+describe("Inbox Member Tests", () => {
+  it("Adds a new memeber to a inbox successfully", async () => {
+    const res = await request(app)
+      .post("/inbox/i1/member")
+      .set("Content-Type", "application/json")
+      .send({
+        userId: "u1",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Added user to inbox successfully");
+  });
+
+  it("Missing inbox id", async () => {
+    const res = await request(app)
+      .post("/inbox/i1/member")
+      .set("Content-Type", "application/json")
+      .send({
+        userId: "",
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch("Inbox ID or user ID are missing");
   });
 });
