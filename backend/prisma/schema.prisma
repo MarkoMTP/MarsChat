@@ -8,6 +8,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+
 model User {
   id             String          @id @default(uuid())
   username       String          @unique
@@ -36,6 +42,9 @@ model InboxMember {
   userId   String
   inbox    Inbox    @relation(fields: [inboxId], references: [id])
   inboxId  String
+
+   role     Role     @default(MEMBER)
+  createdAt DateTime @default(now())
 }
 
 model Message {
