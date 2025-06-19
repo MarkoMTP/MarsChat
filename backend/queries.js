@@ -49,3 +49,12 @@ export async function addUserToInbox(inboxId, userId) {
     },
   });
 }
+
+export async function messageRead(messageId, userId) {
+  await prisma.messageRead.create({
+    data: {
+      messageId,
+      userId,
+    },
+  });
+}

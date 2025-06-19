@@ -12,6 +12,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   // Clear all relevant tables (order matters!)
+  await prisma.messageRead.deleteMany();
   await prisma.message.deleteMany();
   await prisma.inboxMember.deleteMany();
   await prisma.inbox.deleteMany();
@@ -41,6 +42,16 @@ beforeEach(async () => {
       { id: "im2", userId: "u2", inboxId: "i1" },
     ],
   });
+
+  // message for message reads test
+  await prisma.message.create({
+    data: {
+      id: "m1",
+      content: "Message seen",
+      senderId: "u1",
+      inboxId: "i1",
+    },
+  });
 });
 
 describe("Message tests", () => {
@@ -54,6 +65,18 @@ describe("Message tests", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Message sent successfully");
+  });
+
+  it("User reads message", async () => {
+    const res = await request(app)
+      .post("/message/m1/seen")
+      .set("Content-Type", "application/json")
+      .send({
+        userId: "u2",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Message read successfully");
   });
 });
 

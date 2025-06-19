@@ -3,6 +3,7 @@ import registerUserController from "./controllers/registerUserController.js";
 import createMessageController from "./controllers/createMessageController.js";
 import createInboxController from "./controllers/createInboxController.js";
 import addUserToInboxController from "./controllers/addUserToInboxController.js";
+import messageReadController from "./controllers/messageReadController.js";
 
 const router = express.Router();
 
@@ -16,8 +17,9 @@ router.post("/inbox/:inboxId/message", createMessageController);
 
 router.post("/inbox", createInboxController);
 
-router.post("/inbox", createInboxController);
+router.post("/inbox/:inboxId/member", addUserToInboxController);
 
-router.post("/inbox/:id/member", addUserToInboxController);
+//add controller and query just.
+router.post("/message/:messageId/seen", messageReadController);
 
 export default router;
