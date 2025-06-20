@@ -78,6 +78,13 @@ describe("Message tests", () => {
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Message read successfully");
   });
+  ////////// mozda napravi da vrati json(messages)
+  it("Fetches all messages", async () => {
+    const res = await request(app).get("/inbox/i1/messages");
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Messages fetched");
+  });
 });
 
 describe("Inbox Tests", () => {

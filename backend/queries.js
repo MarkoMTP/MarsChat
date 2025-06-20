@@ -58,3 +58,13 @@ export async function messageRead(messageId, userId) {
     },
   });
 }
+export async function getAllMessages(inboxId) {
+  return await prisma.message.findMany({
+    where: {
+      inboxId: inboxId,
+    },
+    orderBy: {
+      createdAt: "asc", // optional, but helps sort messages
+    },
+  });
+}
