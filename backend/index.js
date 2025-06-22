@@ -1,10 +1,12 @@
 import express from "express";
-import registerUserController from "./controllers/registerUserController.js";
-import createMessageController from "./controllers/createMessageController.js";
-import createInboxController from "./controllers/createInboxController.js";
-import addUserToInboxController from "./controllers/addUserToInboxController.js";
-import messageReadController from "./controllers/messageReadController.js";
-import getAllMessagesController from "./controllers/getAllMessagesController.js";
+import registerUserController from "./controllers/userRelatedControllers/registerUserController.js";
+import createMessageController from "./controllers/messageRelatedControllers/createMessageController.js";
+import createInboxController from "./controllers/messageRelatedControllers/createInboxController.js";
+import addUserToInboxController from "./controllers/userRelatedControllers/addUserToInboxController.js";
+import messageReadController from "./controllers/messageRelatedControllers/messageReadController.js";
+import getAllMessagesController from "./controllers/messageRelatedControllers/getAllMessagesController.js";
+import getAllUserInboxes from "./controllers/userRelatedControllers/getAllUserInboxes.js";
+import getAllOtherUsersController from "./controllers/userRelatedControllers/getAllUsersController.js";
 
 const router = express.Router();
 
@@ -13,17 +15,16 @@ router.get("/", (req, res) => {
 });
 
 //  GET functions
-// router.get("/users");
+router.get("/users/others", getAllOtherUsersController);
 
-// router.get("/inboxes");
+router.get("/inboxes", getAllUserInboxes);
 
 router.get("/inbox/:inboxId/messages", getAllMessagesController);
 
 // router.get("/inbox/:inboxId/read-status");
 
-router.post("/register", registerUserController);
-
 // POST functions
+router.post("/register", registerUserController);
 
 router.post("/inbox/:inboxId/message", createMessageController);
 

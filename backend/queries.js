@@ -68,3 +68,25 @@ export async function getAllMessages(inboxId) {
     },
   });
 }
+
+export async function getInboxesForUser(userId) {
+  return await prisma.inbox.findMany({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+  });
+}
+
+export async function getAllOtherUsers(userId) {
+  return await prisma.user.findMany({
+    where: {
+      NOT: {
+        id: userId,
+      },
+    },
+  });
+}

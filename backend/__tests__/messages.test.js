@@ -21,8 +21,9 @@ beforeEach(async () => {
   // Create 2 users
   await prisma.user.createMany({
     data: [
-      { id: "u1", username: "User1", password: "12345678", bio: "Hello" },
-      { id: "u2", username: "User2", password: "12345678", bio: "Hello" },
+      { id: "u1", username: "User1", password: "pw1", bio: "bio1" },
+      { id: "u2", username: "User2", password: "pw2", bio: "bio2" },
+      { id: "u3", username: "User3", password: "pw3", bio: "bio3" },
     ],
   });
 
@@ -78,7 +79,6 @@ describe("Message tests", () => {
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Message read successfully");
   });
-  ////////// mozda napravi da vrati json(messages)
   it("Fetches all messages", async () => {
     const res = await request(app).get("/inbox/i1/messages");
 
@@ -86,6 +86,8 @@ describe("Message tests", () => {
     expect(res.text).toMatch("Messages fetched");
   });
 });
+
+///////////////// inbox
 
 describe("Inbox Tests", () => {
   it("creates an inbox correctly", async () => {
@@ -109,6 +111,16 @@ describe("Inbox Tests", () => {
 
     expect(res.status).toBe(400);
     expect(res.text).toMatch("Inbox name missing");
+  });
+
+  it("should fetch all inboxes for the user", async () => {
+    const res = await request(app)
+      .get("/inboxes") // your actual route
+      .set("Content-Type", "application/json")
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch(/Successfully fetched/);
   });
 });
 
@@ -135,5 +147,15 @@ describe("Inbox Member Tests", () => {
 
     expect(res.status).toBe(400);
     expect(res.text).toMatch("Inbox ID or user ID are missing");
+  });
+
+  it("returns all users except the logged in one", async () => {
+    const res = await request(app)
+      .get("/users/others")
+      .set("user", JSON.stringify({ userId: "u1" })); // simulate auth middleware
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(2);
+    expect(res.body.some((u) => u.id === "u1")).toBe(false);
   });
 });
