@@ -90,3 +90,20 @@ export async function getAllOtherUsers(userId) {
     },
   });
 }
+
+export async function updateUser(userId, username, bio, profilePicUrl) {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      ...(username && { username }),
+      ...(bio && { bio }),
+      ...(profilePicUrl && { profilePicUrl }),
+    },
+  });
+}
+
+export async function findUserById(userId) {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+  });
+}
