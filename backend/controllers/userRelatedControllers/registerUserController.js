@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { findUserName, registerUser } from "../queries.js";
+import { findUserName, registerUser } from "../../queries.js";
 
 export default async function registerUserController(req, res) {
   try {

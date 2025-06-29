@@ -1,4 +1,4 @@
-import { messageRead } from "../queries";
+import { messageRead } from "../../queries.js";
 
 export default async function messageReadController(req, res) {
   const { messageId } = req.params;

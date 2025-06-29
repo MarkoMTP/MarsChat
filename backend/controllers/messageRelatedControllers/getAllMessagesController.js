@@ -1,6 +1,6 @@
-import { getAllMessages } from "../queries.js";
+import { getAllMessages } from "../../queries.js";
 
-export default async function (req, res) {
+export default async function getAllMessagesController(req, res) {
   const { inboxId } = req.params;
 
   try {

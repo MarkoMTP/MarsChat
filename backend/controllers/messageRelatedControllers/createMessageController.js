@@ -1,4 +1,4 @@
-import { createNewMsg } from "../queries";
+import { createNewMsg } from "../../queries.js";
 
 export default async function createMessageController(req, res) {
   const { inboxId } = req.params;
@@ -6,6 +6,10 @@ export default async function createMessageController(req, res) {
   const userId = req.user.id;
 
   try {
+    if (!messageText || !userId) {
+      return res.status(400).send("Message text or user id is missing");
+    }
+
     await createNewMsg(messageText, userId, inboxId);
     return res.status(200).send("Message sent successfully");
   } catch (err) {

@@ -1,7 +1,7 @@
-import { addUserToInbox } from "../queries";
+import { addUserToInbox } from "../../queries.js";
 
 export default async function addUserToInboxController(req, res) {
-  const { id: inboxId } = req.params;
+  const { inboxId } = req.params;
   const { userId } = req.body;
 
   try {

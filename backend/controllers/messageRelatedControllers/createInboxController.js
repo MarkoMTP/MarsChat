@@ -1,4 +1,4 @@
-import { createNewPrivateInbox } from "../queries";
+import { createNewPrivateInbox } from "../../queries.js";
 
 export default async function createInboxController(req, res) {
   const { name } = req.body;
@@ -12,7 +12,7 @@ export default async function createInboxController(req, res) {
     }
   } catch (err) {
     console.error(
-      "Error in the registerUserController during registration",
+      "Error in the createInboxController during inbox creation",
       err
     );
     return res.status(500).json({ error: "Internal server error" }); // better than throwing

@@ -11,6 +11,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  await prisma.messageRead.deleteMany();
   await prisma.message.deleteMany();
   await prisma.inboxMember.deleteMany();
   await prisma.inbox.deleteMany();

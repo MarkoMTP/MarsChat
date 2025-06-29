@@ -7,6 +7,7 @@ import messageReadController from "./controllers/messageRelatedControllers/messa
 import getAllMessagesController from "./controllers/messageRelatedControllers/getAllMessagesController.js";
 import getAllUserInboxes from "./controllers/userRelatedControllers/getAllUserInboxes.js";
 import getAllOtherUsersController from "./controllers/userRelatedControllers/getAllUsersController.js";
+import { updateUserController } from "./controllers/userRelatedControllers/updateUserController.js";
 
 const router = express.Router();
 
@@ -35,6 +36,6 @@ router.post("/inbox/:inboxId/member", addUserToInboxController);
 router.post("/message/:messageId/seen", messageReadController);
 
 // PUT/PATCH functions
-// router.patch("/users/:userId/");
+router.patch("/users/:userId", updateUserController);
 
 export default router;
