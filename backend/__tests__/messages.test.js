@@ -1,76 +1,60 @@
 import request from "supertest";
 import app from "../server.js";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-
-//prisma setup
-
 import prisma from "../prisma/prismaClient.js";
 
+// Clean up after all tests
 afterAll(async () => {
   await prisma.$disconnect();
 });
 
+// Seed test data before each test
 beforeEach(async () => {
-  // Clear all relevant tables (order matters!)
   await prisma.messageRead.deleteMany();
   await prisma.message.deleteMany();
   await prisma.inboxMember.deleteMany();
   await prisma.inbox.deleteMany();
   await prisma.user.deleteMany();
 
-  // Create 2 users
   await prisma.user.createMany({
     data: [
       { id: "u1", username: "User1", password: "pw1", bio: "bio1" },
       { id: "u2", username: "User2", password: "pw2", bio: "bio2" },
       { id: "u3", username: "User3", password: "pw3", bio: "bio3" },
+      { id: "u4", username: "User4", password: "pw3", bio: "bio3" },
     ],
   });
 
-  // Create inbox
-  await prisma.inbox.create({
-    data: {
-      id: "i1",
-      isGroup: false,
-      name: "Direct Chat",
-    },
+  await prisma.inbox.createMany({
+    data: [
+      { id: "i1", isGroup: false, name: "Direct Chat" },
+      { id: "i2", isGroup: false, name: "Direct Chat" },
+    ],
   });
 
-  // Add members to the inbox
   await prisma.inboxMember.createMany({
     data: [
       { id: "im1", userId: "u1", inboxId: "i1" },
       { id: "im2", userId: "u2", inboxId: "i1" },
+      { id: "im3", userId: "u4", inboxId: "i2" },
     ],
   });
 
-  // message for message reads test
   await prisma.message.createMany({
     data: [
-      {
-        id: "m1",
-        content: "Message seen",
-        senderId: "u1",
-        inboxId: "i1",
-      },
-      {
-        id: "m55",
-        content: "Message seen",
-        senderId: "u1",
-        inboxId: "i1",
-      },
+      { id: "m1", content: "Message seen", senderId: "u1", inboxId: "i1" },
+      { id: "m55", content: "Message seen", senderId: "u1", inboxId: "i1" },
     ],
   });
 });
 
+// MESSAGE ROUTES
 describe("Message tests", () => {
-  it("user1 successfully  sends a message to user2", async () => {
+  it("user1 successfully sends a message to user2", async () => {
     const res = await request(app)
       .post("/inbox/i1/message")
       .set("Content-Type", "application/json")
-      .send({
-        messageText: "Hey",
-      });
+      .send({ messageText: "Hey" });
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Message sent successfully");
@@ -80,13 +64,12 @@ describe("Message tests", () => {
     const res = await request(app)
       .post("/message/m1/seen")
       .set("Content-Type", "application/json")
-      .send({
-        userId: "u2",
-      });
+      .send({ userId: "u2" });
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Message read successfully");
   });
+
   it("Fetches all messages", async () => {
     const res = await request(app).get("/inbox/i1/messages");
 
@@ -103,7 +86,7 @@ describe("Message tests", () => {
     expect(res.text).toMatch("Message deleted successfully");
   });
 
-  it("Deletes message unsuccessfully", async () => {
+  it("Fails to delete nonexistent message", async () => {
     const res = await request(app)
       .delete("/message/m2")
       .set("Content-Type", "application/json");
@@ -113,35 +96,31 @@ describe("Message tests", () => {
   });
 });
 
-///////////////// inbox
-
+// INBOX ROUTES
 describe("Inbox Tests", () => {
-  it("creates an inbox correctly", async () => {
+  it("Creates an inbox correctly", async () => {
     const res = await request(app)
       .post("/inbox")
       .set("Content-Type", "application/json")
-      .send({
-        name: "Inbox Test",
-      });
+      .send({ name: "Inbox Test" });
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Inbox created successfully");
   });
-  it("Error missing inbox name", async () => {
+
+  it("Fails to create inbox with missing name", async () => {
     const res = await request(app)
       .post("/inbox")
       .set("Content-Type", "application/json")
-      .send({
-        name: "",
-      });
+      .send({ name: "" });
 
     expect(res.status).toBe(400);
     expect(res.text).toMatch("Inbox name missing");
   });
 
-  it("should fetch all inboxes for the user", async () => {
+  it("Fetches all inboxes for the user", async () => {
     const res = await request(app)
-      .get("/inboxes") // your actual route
+      .get("/inboxes")
       .set("Content-Type", "application/json")
       .send();
 
@@ -150,38 +129,87 @@ describe("Inbox Tests", () => {
   });
 });
 
+// INBOX MEMBER ROUTES
 describe("Inbox Member Tests", () => {
-  it("Adds a new memeber to a inbox successfully", async () => {
+  it("Adds a new member to an inbox successfully", async () => {
     const res = await request(app)
       .post("/inbox/i1/member")
       .set("Content-Type", "application/json")
-      .send({
-        userId: "u1",
-      });
+      .send({ userId: "u1" });
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Added user to inbox successfully");
   });
 
-  it("Missing inbox id", async () => {
+  it("Fails to add member with missing user ID", async () => {
     const res = await request(app)
       .post("/inbox/i1/member")
       .set("Content-Type", "application/json")
-      .send({
-        userId: "",
-      });
+      .send({ userId: "" });
 
     expect(res.status).toBe(400);
     expect(res.text).toMatch("Inbox ID or user ID are missing");
   });
 
-  it("returns all users except the logged in one", async () => {
+  it("Returns all users except the logged in one", async () => {
     const res = await request(app)
       .get("/users/others")
-      .set("user", JSON.stringify({ userId: "u1" })); // simulate auth middleware
+      .set("user", JSON.stringify({ userId: "u1" }));
 
     expect(res.status).toBe(200);
-    expect(res.body.length).toBe(2);
+    expect(res.body.length).toBe(3);
     expect(res.body.some((u) => u.id === "u1")).toBe(false);
+  });
+});
+
+describe("Inbox Member Deletion Tests", () => {
+  it("Removes user from inbox", async () => {
+    const res = await request(app)
+      .delete("/inbox/i2/member/u4")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("User successfully removed from inbox");
+  });
+
+  it("Returns 404 if inbox does not exist", async () => {
+    const res = await request(app)
+      .delete("/inbox/nonexistentInbox/member/u4")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Inbox does not exist");
+  });
+
+  it("Returns 404 if user does not exist", async () => {
+    const res = await request(app)
+      .delete("/inbox/i2/member/u5")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("User does not exist");
+  });
+
+  it("Returns 404 if inbox member does not exist", async () => {
+    const res = await request(app)
+      .delete("/inbox/i1/member/u4")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Inbox Member does not exist");
+  });
+
+  it("Returns 500 if a server error occurs", async () => {
+    const original = prisma.inboxMember.deleteMany;
+    prisma.inboxMember.deleteMany = () => {
+      throw new Error("Forced failure");
+    };
+
+    const res = await request(app)
+      .delete("/inbox/i2/member/u4")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(500);
+    expect(res.body.error).toMatch("Failed to delete inbox member");
   });
 });

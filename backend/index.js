@@ -9,6 +9,7 @@ import getAllUserInboxes from "./controllers/userRelatedControllers/getAllUserIn
 import getAllOtherUsersController from "./controllers/userRelatedControllers/getAllUsersController.js";
 import { updateUserController } from "./controllers/userRelatedControllers/updateUserController.js";
 import deleteMessageController from "./controllers/messageRelatedControllers/deleteMessageController.js";
+import removeUserFromInbox from "./controllers/userRelatedControllers/removeUserFromInboxController.js";
 
 const router = express.Router();
 
@@ -41,7 +42,8 @@ router.patch("/users/:userId", updateUserController);
 
 router.delete("/message/:messageId", deleteMessageController);
 
-// router.delete("/inbox/:inboxId/member/:userId");
+//remove user from a inbox
+router.delete("/inbox/:inboxId/member/:userId", removeUserFromInbox);
 
 // router.delete("/inbox/:inboxId");
 export default router;
