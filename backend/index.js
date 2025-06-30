@@ -8,6 +8,7 @@ import getAllMessagesController from "./controllers/messageRelatedControllers/ge
 import getAllUserInboxes from "./controllers/userRelatedControllers/getAllUserInboxes.js";
 import getAllOtherUsersController from "./controllers/userRelatedControllers/getAllUsersController.js";
 import { updateUserController } from "./controllers/userRelatedControllers/updateUserController.js";
+import deleteMessageController from "./controllers/messageRelatedControllers/deleteMessageController.js";
 
 const router = express.Router();
 
@@ -21,8 +22,6 @@ router.get("/users/others", getAllOtherUsersController);
 router.get("/inboxes", getAllUserInboxes);
 
 router.get("/inbox/:inboxId/messages", getAllMessagesController);
-
-// router.get("/inbox/:inboxId/read-status");
 
 // POST functions
 router.post("/register", registerUserController);
@@ -38,4 +37,11 @@ router.post("/message/:messageId/seen", messageReadController);
 // PUT/PATCH functions
 router.patch("/users/:userId", updateUserController);
 
+// DELETE functions
+
+router.delete("/message/:messageId", deleteMessageController);
+
+// router.delete("/inbox/:inboxId/member/:userId");
+
+// router.delete("/inbox/:inboxId");
 export default router;

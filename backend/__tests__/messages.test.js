@@ -45,13 +45,21 @@ beforeEach(async () => {
   });
 
   // message for message reads test
-  await prisma.message.create({
-    data: {
-      id: "m1",
-      content: "Message seen",
-      senderId: "u1",
-      inboxId: "i1",
-    },
+  await prisma.message.createMany({
+    data: [
+      {
+        id: "m1",
+        content: "Message seen",
+        senderId: "u1",
+        inboxId: "i1",
+      },
+      {
+        id: "m55",
+        content: "Message seen",
+        senderId: "u1",
+        inboxId: "i1",
+      },
+    ],
   });
 });
 
@@ -84,6 +92,24 @@ describe("Message tests", () => {
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Messages fetched");
+  });
+
+  it("Deletes message successfully", async () => {
+    const res = await request(app)
+      .delete("/message/m55")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Message deleted successfully");
+  });
+
+  it("Deletes message unsuccessfully", async () => {
+    const res = await request(app)
+      .delete("/message/m2")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Message not found in the database");
   });
 });
 

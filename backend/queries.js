@@ -58,6 +58,7 @@ export async function messageRead(messageId, userId) {
     },
   });
 }
+
 export async function getAllMessages(inboxId) {
   return await prisma.message.findMany({
     where: {
@@ -105,5 +106,11 @@ export async function updateUser(userId, username, bio, profilePicUrl) {
 export async function findUserById(userId) {
   return await prisma.user.findUnique({
     where: { id: userId },
+  });
+}
+
+export async function deleteMsg(messageId) {
+  return await prisma.message.delete({
+    where: { id: messageId },
   });
 }
