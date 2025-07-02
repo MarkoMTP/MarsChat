@@ -58,6 +58,10 @@ export async function getAllOtherUsers(userId) {
   });
 }
 
+// Get all users
+export async function getAllUsers() {
+  return await prisma.user.findMany();
+}
 //
 // 💬 MESSAGE-RELATED QUERIES
 //

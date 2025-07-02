@@ -1,4 +1,4 @@
-import { getInboxesForUser } from "../../queries";
+import { getInboxesForUser } from "../../queries.js";
 
 export default async function getAllUserInboxes(req, res) {
   const userId = req.user.id;

@@ -1,4 +1,4 @@
-import { deleteInboxById, getInboxById } from "../../queries";
+import { deleteInboxById, getInboxById } from "../../queries.js";
 
 export default async function deleteInboxController(req, res) {
   const { inboxId } = req.params;

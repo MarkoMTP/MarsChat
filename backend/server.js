@@ -3,9 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import router from "./index.js";
 import mockAuth from "./middleware/mockAuth.js";
+import passport from "./passport/passport.js";
 
 dotenv.config();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -13,6 +13,7 @@ app.use(express.json());
 if (process.env.NODE_ENV === "test") {
   app.use(mockAuth);
 }
+app.use(passport.initialize());
 
 app.use("/", router);
 

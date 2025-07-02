@@ -1,4 +1,4 @@
-import { findUserById, updateUser } from "../../queries";
+import { findUserById, updateUser } from "../../queries.js";
 
 export async function updateUserController(req, res) {
   const { userId } = req.params;

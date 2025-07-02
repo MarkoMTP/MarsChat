@@ -3,7 +3,7 @@ import {
   findInboxMemberByIds,
   findUserById,
   getInboxById,
-} from "../../queries";
+} from "../../queries.js";
 
 export default async function removeUserFromInbox(req, res) {
   const { userId, inboxId } = req.params;

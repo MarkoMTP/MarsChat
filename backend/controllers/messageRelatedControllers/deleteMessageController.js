@@ -1,11 +1,17 @@
-import { deleteMsg } from "../../queries";
+import { deleteMsg, getMsgById } from "../../queries.js";
 
 export default async function deleteMessageController(req, res) {
   const { messageId } = req.params;
 
   try {
     if (!messageId) {
-      res.status(404).send("Message Id is missing");
+      return res.status(404).send("Message Id is missing");
+    }
+
+    const foundMsg = await getMsgById(messageId);
+
+    if (!foundMsg) {
+      return res.status(404).send("Message not found in the database");
     }
 
     await deleteMsg(messageId);
