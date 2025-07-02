@@ -29,6 +29,7 @@ beforeEach(async () => {
     data: [
       { id: "i1", isGroup: false, name: "Direct Chat" },
       { id: "i2", isGroup: false, name: "Direct Chat" },
+      { id: "i3", isGroup: false, name: "Delete test" },
     ],
   });
 
@@ -127,6 +128,26 @@ describe("Inbox Tests", () => {
     expect(res.status).toBe(200);
     expect(res.text).toMatch(/Successfully fetched/);
   });
+
+  //DELETE INBOX TESTS
+
+  it("Deletes a inbox", async () => {
+    const res = await request(app)
+      .delete("/inbox/i3")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Inbox successfully deleted");
+  });
+
+  it("Fails because inbox does not exist", async () => {
+    const res = await request(app)
+      .delete("/inbox/4")
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Inbox does not exist");
+  });
 });
 
 // INBOX MEMBER ROUTES
@@ -135,7 +156,7 @@ describe("Inbox Member Tests", () => {
     const res = await request(app)
       .post("/inbox/i1/member")
       .set("Content-Type", "application/json")
-      .send({ userId: "u1" });
+      .send({ userId: "u4" });
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Added user to inbox successfully");

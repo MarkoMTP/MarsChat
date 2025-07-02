@@ -146,12 +146,14 @@ export async function getInboxesForUser(userId) {
   });
 }
 
+// get inbox with id
 export async function getInboxById(id) {
   return await prisma.inbox.findUnique({
     where: { id },
   });
 }
 
+//find inbox memebers by ids
 export async function findInboxMemberByIds(userId, inboxId) {
   return await prisma.inboxMember.findMany({
     where: {
@@ -161,11 +163,21 @@ export async function findInboxMemberByIds(userId, inboxId) {
   });
 }
 
+//delete members with ids
+
 export async function deleteInboxMemberByIds(userId, inboxId) {
   return await prisma.inboxMember.deleteMany({
     where: {
       userId: userId,
       inboxId: inboxId,
     },
+  });
+}
+
+// DELETE inbox with Id
+
+export async function deleteInboxById(id) {
+  return await prisma.inbox.delete({
+    where: { id },
   });
 }
