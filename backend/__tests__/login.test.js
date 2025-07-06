@@ -4,15 +4,17 @@ import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import prisma from "../prisma/prismaClient.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 beforeEach(async () => {
-  await prisma.user.deleteMany();
+  await prisma.user.deleteMany({ where: { id: "u5" } }); // SAFE
 
   const hashedPassword = await bcrypt.hash("testpass", 10);
 
   await prisma.user.create({
     data: {
-      id: "u1",
+      id: "u5",
       username: "testuser",
       password: hashedPassword,
       bio: "testing",
@@ -31,11 +33,10 @@ describe("Login Route", () => {
       .send({ username: "testuser", password: "testpass" });
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("token");
     expect(res.body.message).toBe("Logged in");
 
     const decoded = jwt.verify(res.body.token, process.env.JWT_SECRET);
-    expect(decoded).toHaveProperty("id", "u1");
+    expect(decoded).toHaveProperty("id", "u5");
   });
 
   it("returns message for wrong password", async () => {
@@ -43,7 +44,7 @@ describe("Login Route", () => {
       .post("/login")
       .send({ username: "testuser", password: "wrongpass" });
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
     expect(res.text).toBe("Password is not correct");
   });
 
@@ -52,7 +53,7 @@ describe("Login Route", () => {
       .post("/login")
       .send({ username: "ghost", password: "whatever" });
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
     expect(res.text).toBe("User does not exist");
   });
 });

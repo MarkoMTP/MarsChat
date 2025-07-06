@@ -8,11 +8,11 @@ export default async function logincontroller(req, res) {
   try {
     const user = await findUserName(username);
     if (!user) {
-      return res.status(200).send("User does not exist");
+      return res.status(400).send("User does not exist");
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      return res.status(200).send("Password is not correct");
+      return res.status(400).send("Password is not correct");
     }
 
     //create a JWT token
@@ -21,6 +21,7 @@ export default async function logincontroller(req, res) {
     });
     res.send({ message: "Logged in", token });
   } catch (err) {
-    return console.error(err);
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

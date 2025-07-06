@@ -2,23 +2,21 @@ import request from "supertest";
 import app from "../server.js";
 import jwt from "jsonwebtoken";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import dotenv from "dotenv";
+dotenv.config();
 
 //prisma setup
 
-const testUser = { id: "u9" };
-const testToken = jwt.sign(testUser, process.env.JWT_SECRET);
-
 import prisma from "../prisma/prismaClient.js";
+
+const testUser = { id: "u9" };
+let testToken;
 
 afterAll(async () => {
   await prisma.$disconnect();
 });
 beforeEach(async () => {
-  await prisma.messageRead.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.inboxMember.deleteMany(); // must come before users/inboxes
-  await prisma.inbox.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.user.deleteMany({ where: { id: "u9" } }); // SAFE
 
   await prisma.user.create({
     data: {
@@ -28,6 +26,7 @@ beforeEach(async () => {
       bio: "Initial bio",
     },
   });
+  testToken = jwt.sign(testUser, process.env.JWT_SECRET);
 });
 
 describe("PATCH /users/:userId", () => {

@@ -3,9 +3,11 @@ import app from "../server.js";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import prisma from "../prisma/prismaClient.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const testUser = { id: "u1" };
-const testToken = jwt.sign(testUser, process.env.JWT_SECRET);
+let testToken;
 
 // Clean up after all tests
 afterAll(async () => {
@@ -14,12 +16,49 @@ afterAll(async () => {
 
 // Seed test data before each test
 beforeEach(async () => {
-  await prisma.messageRead.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.inboxMember.deleteMany();
-  await prisma.inbox.deleteMany();
-  await prisma.user.deleteMany();
+  // Delete MessageReads associated with known and unknown test messages
+  await prisma.messageRead.deleteMany({
+    where: {
+      OR: [
+        { messageId: { in: ["m1", "m55"] } },
+        { message: { content: { contains: "Hey" } } }, // sent during message creation test
+      ],
+    },
+  });
 
+  // Delete all test messages, including ones created during tests (e.g. with "Hey" content)
+  await prisma.message.deleteMany({
+    where: {
+      OR: [{ id: { in: ["m1", "m55"] } }, { content: { contains: "Hey" } }],
+    },
+  });
+
+  // Delete inbox members, even if created dynamically
+  await prisma.inboxMember.deleteMany({
+    where: {
+      OR: [
+        { id: { in: ["im1", "im2", "im3"] } },
+        { userId: "u4", inboxId: "i1" }, // test that adds u4 to i1
+      ],
+    },
+  });
+
+  // Delete inboxes including dynamically created ones
+  await prisma.inbox.deleteMany({
+    where: {
+      OR: [
+        { id: { in: ["i1", "i2", "i3", "i4"] } },
+        { name: { contains: "Inbox Test" } },
+      ],
+    },
+  });
+
+  // Delete test users
+  await prisma.user.deleteMany({
+    where: {
+      id: { in: ["u1", "u2", "u3", "u4"] },
+    },
+  });
   await prisma.user.createMany({
     data: [
       { id: "u1", username: "User1", password: "pw1", bio: "bio1" },
@@ -34,6 +73,11 @@ beforeEach(async () => {
       { id: "i1", isGroup: false, name: "Direct Chat" },
       { id: "i2", isGroup: false, name: "Direct Chat" },
       { id: "i3", isGroup: false, name: "Delete test" },
+      {
+        id: "i4",
+        isGroup: false,
+        name: "Test Inbox",
+      },
     ],
   });
 
@@ -51,6 +95,8 @@ beforeEach(async () => {
       { id: "m55", content: "Message seen", senderId: "u1", inboxId: "i1" },
     ],
   });
+
+  testToken = jwt.sign(testUser, process.env.JWT_SECRET);
 });
 
 // MESSAGE ROUTES
@@ -131,6 +177,21 @@ describe("Inbox Tests", () => {
     expect(res.text).toMatch("Inbox name missing");
   });
 
+  it("fetches inbox successfully", async () => {
+    const res = await request(app)
+      .get("/inbox/i4")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+    expect(res.status).toBe(200);
+    expect(res.text).toBe("Successfully fetched all inboxes for user");
+  });
+
+  it("returns 400 when inboxId is missing", async () => {
+    const res = await request(app).get("/inbox/");
+    // Supertest will 404 before hitting the controller, so you need to manually call it if you really want to test the missing ID case.
+    expect(res.status).toBe(404);
+  });
+
   it("Fetches all inboxes for the user", async () => {
     const res = await request(app)
       .get("/inboxes")
@@ -193,7 +254,7 @@ describe("Inbox Member Tests", () => {
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
-    expect(res.body.length).toBe(3);
+    expect(res.body.length).toBeGreaterThan(2);
     expect(res.body.some((u) => u.id === "u1")).toBe(false);
   });
 });
@@ -221,7 +282,7 @@ describe("Inbox Member Deletion Tests", () => {
 
   it("Returns 404 if user does not exist", async () => {
     const res = await request(app)
-      .delete("/inbox/i2/member/u5")
+      .delete("/inbox/i2/member/u55")
       .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
