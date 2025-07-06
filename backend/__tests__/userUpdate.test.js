@@ -1,8 +1,12 @@
 import request from "supertest";
 import app from "../server.js";
+import jwt from "jsonwebtoken";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
 //prisma setup
+
+const testUser = { id: "u9" };
+const testToken = jwt.sign(testUser, process.env.JWT_SECRET);
 
 import prisma from "../prisma/prismaClient.js";
 
@@ -31,6 +35,7 @@ describe("PATCH /users/:userId", () => {
     const res = await request(app)
       .patch("/users/u9")
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${testToken}`)
       .send({
         username: "updatedUser",
         bio: "Updated bio",
@@ -46,6 +51,7 @@ describe("PATCH /users/:userId", () => {
     const res = await request(app)
       .patch("/users/nonexistent")
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${testToken}`)
       .send({ username: "ghost" });
 
     expect(res.status).toBe(404);

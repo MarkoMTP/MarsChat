@@ -2,6 +2,10 @@ import request from "supertest";
 import app from "../server.js";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import prisma from "../prisma/prismaClient.js";
+import jwt from "jsonwebtoken";
+
+const testUser = { id: "u1" };
+const testToken = jwt.sign(testUser, process.env.JWT_SECRET);
 
 // Clean up after all tests
 afterAll(async () => {
@@ -54,6 +58,7 @@ describe("Message tests", () => {
   it("user1 successfully sends a message to user2", async () => {
     const res = await request(app)
       .post("/inbox/i1/message")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ messageText: "Hey" });
 
@@ -64,6 +69,7 @@ describe("Message tests", () => {
   it("User reads message", async () => {
     const res = await request(app)
       .post("/message/m1/seen")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ userId: "u2" });
 
@@ -72,7 +78,9 @@ describe("Message tests", () => {
   });
 
   it("Fetches all messages", async () => {
-    const res = await request(app).get("/inbox/i1/messages");
+    const res = await request(app)
+      .get("/inbox/i1/messages")
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Messages fetched");
@@ -81,6 +89,7 @@ describe("Message tests", () => {
   it("Deletes message successfully", async () => {
     const res = await request(app)
       .delete("/message/m55")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
@@ -90,6 +99,7 @@ describe("Message tests", () => {
   it("Fails to delete nonexistent message", async () => {
     const res = await request(app)
       .delete("/message/m2")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(404);
@@ -102,6 +112,7 @@ describe("Inbox Tests", () => {
   it("Creates an inbox correctly", async () => {
     const res = await request(app)
       .post("/inbox")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ name: "Inbox Test" });
 
@@ -112,6 +123,7 @@ describe("Inbox Tests", () => {
   it("Fails to create inbox with missing name", async () => {
     const res = await request(app)
       .post("/inbox")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ name: "" });
 
@@ -122,18 +134,17 @@ describe("Inbox Tests", () => {
   it("Fetches all inboxes for the user", async () => {
     const res = await request(app)
       .get("/inboxes")
-      .set("Content-Type", "application/json")
-      .send();
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
     expect(res.text).toMatch(/Successfully fetched/);
   });
 
-  //DELETE INBOX TESTS
-
   it("Deletes a inbox", async () => {
     const res = await request(app)
       .delete("/inbox/i3")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
@@ -143,6 +154,7 @@ describe("Inbox Tests", () => {
   it("Fails because inbox does not exist", async () => {
     const res = await request(app)
       .delete("/inbox/4")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(404);
@@ -155,6 +167,7 @@ describe("Inbox Member Tests", () => {
   it("Adds a new member to an inbox successfully", async () => {
     const res = await request(app)
       .post("/inbox/i1/member")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ userId: "u4" });
 
@@ -165,6 +178,7 @@ describe("Inbox Member Tests", () => {
   it("Fails to add member with missing user ID", async () => {
     const res = await request(app)
       .post("/inbox/i1/member")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({ userId: "" });
 
@@ -175,7 +189,8 @@ describe("Inbox Member Tests", () => {
   it("Returns all users except the logged in one", async () => {
     const res = await request(app)
       .get("/users/others")
-      .set("user", JSON.stringify({ userId: "u1" }));
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
     expect(res.body.length).toBe(3);
@@ -187,6 +202,7 @@ describe("Inbox Member Deletion Tests", () => {
   it("Removes user from inbox", async () => {
     const res = await request(app)
       .delete("/inbox/i2/member/u4")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
@@ -196,6 +212,7 @@ describe("Inbox Member Deletion Tests", () => {
   it("Returns 404 if inbox does not exist", async () => {
     const res = await request(app)
       .delete("/inbox/nonexistentInbox/member/u4")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(404);
@@ -205,6 +222,7 @@ describe("Inbox Member Deletion Tests", () => {
   it("Returns 404 if user does not exist", async () => {
     const res = await request(app)
       .delete("/inbox/i2/member/u5")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(404);
@@ -214,6 +232,7 @@ describe("Inbox Member Deletion Tests", () => {
   it("Returns 404 if inbox member does not exist", async () => {
     const res = await request(app)
       .delete("/inbox/i1/member/u4")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(404);
@@ -228,9 +247,12 @@ describe("Inbox Member Deletion Tests", () => {
 
     const res = await request(app)
       .delete("/inbox/i2/member/u4")
+      .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(500);
     expect(res.body.error).toMatch("Failed to delete inbox member");
+
+    prisma.inboxMember.deleteMany = original; // Restore original
   });
 });
