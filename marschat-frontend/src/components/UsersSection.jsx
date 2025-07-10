@@ -1,28 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import UserComponent from "./UserComponent";
 
-export default function UsersSection() {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await api.get("/users/others");
-        setUsers(res.data);
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-      }
-    }
-    fetchUsers();
-  }, []);
-  console.log(users.data);
-
+export default function UsersSection({ users }) {
   return (
     <div>
       <h2>Users Section</h2>
       <div>
         {users.map((user) => (
-          <div key={user.id}>{user.username}</div>
+          <UserComponent key={user.id} user={user} onClick={() => {}} />
         ))}
       </div>
     </div>
