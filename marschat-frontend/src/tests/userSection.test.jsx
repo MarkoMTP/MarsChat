@@ -2,10 +2,10 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UsersSection from "../components/UsersSection";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 vi.mock("jwt-decode", () => ({
-  default: vi.fn(),
+  jwtDecode: vi.fn(),
 }));
 
 describe("Users Section", () => {
