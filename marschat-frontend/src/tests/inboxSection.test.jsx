@@ -4,9 +4,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import InboxesSection from "../components/InboxesSection.jsx";
 import jwtDecode from "jwt-decode";
 
-vi.mock("jwt-decode", () => ({
-  default: vi.fn(),
-}));
+vi.mock("jwt-decode", () => {
+  return {
+    default: vi.fn(() => ({ id: "mock-user-id" })),
+  };
+});
 
 describe("Inboxes Section", () => {
   beforeEach(() => {

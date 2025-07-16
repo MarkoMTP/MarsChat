@@ -2,7 +2,7 @@ import jwtDecode from "jwt-decode";
 
 export default function UserComponent({ user, onClick }) {
   const token = localStorage.getItem("token");
-  const decoded = jwtDecode(token); // assumes token is valid
+  const decoded = jwtDecode(token);
 
   const loggedInUserId = decoded.id;
 

@@ -5,10 +5,10 @@ import UserComponent from "../components/UserComponent";
 import jwtDecode from "jwt-decode";
 
 vi.mock("jwt-decode", () => ({
-  default: vi.fn(),
+  default: vi.fn(() => ({ id: "1" })),
 }));
 
-describe("Users Section", () => {
+describe("User Component", () => {
   beforeEach(() => {
     vi.stubGlobal("localStorage", {
       getItem: vi.fn(() => "fake token"),

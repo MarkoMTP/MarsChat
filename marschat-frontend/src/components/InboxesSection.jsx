@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import api from "../api";
 import InboxComponent from "./InboxComponent";
 
 export default function InboxesSection({ inboxes }) {
