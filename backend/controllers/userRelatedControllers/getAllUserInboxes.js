@@ -11,7 +11,7 @@ export default async function getAllUserInboxes(req, res) {
 
     const inboxes = await getInboxesForUser(userId);
 
-    res.status(200).send("Successfully fetched all inboxes for user");
+    res.status(200).send(inboxes);
   } catch (err) {
     console.error("Error fetching inboxes:", err);
     return res.status(500).json({ error: "Failed to fetch inboxes of user" });

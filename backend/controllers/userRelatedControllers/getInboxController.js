@@ -11,7 +11,7 @@ export default async function getInboxController(req, res) {
 
     const inbox = await getInboxById(inboxId);
 
-    res.status(200).send("Successfully fetched all inboxes for user");
+    res.status(200).send(inbox);
   } catch (err) {
     console.error("Error fetching inbox:", err);
     return res.status(500).json({ error: "Failed to fetch inbox" });

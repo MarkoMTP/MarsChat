@@ -1,4 +1,4 @@
-import { findUserById } from "../../queries";
+import { findUserById } from "../../queries.js";
 
 export default async function getUserById(req, res) {
   const { userId } = req.params;

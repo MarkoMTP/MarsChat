@@ -9,6 +9,9 @@
   },
   "keywords": [],
   "author": "",
+  "prisma": {
+  "seed": "node prisma/seed.js"
+},
   "license": "ISC",
   "description": "",
   "dependencies": {

@@ -19,6 +19,7 @@ import removeUserFromInbox from "./controllers/userRelatedControllers/removeUser
 
 import { getAllUsers, getInboxById } from "./queries.js";
 import getInboxController from "./controllers/userRelatedControllers/getInboxController.js";
+import getUserById from "./controllers/userRelatedControllers/getUserController.js";
 
 const router = express.Router();
 
@@ -35,6 +36,12 @@ router.get(
   "/users/others",
   passport.authenticate("jwt", { session: false }),
   getAllOtherUsersController
+);
+
+router.get(
+  "/users/:userId",
+  passport.authenticate("jwt", { session: false }),
+  getUserById
 );
 
 router.get(
