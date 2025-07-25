@@ -1,18 +1,19 @@
-import { useState } from "react";
 import MessageStack from "./MessageStack";
 import InboxSettings from "./InboxSettings";
 
 export default function ChatBox({
+  inboxId,
   inboxName,
   inboxMessages,
   inboxMembers,
   lastSeenMessage,
   user,
-  handleFunction,
+  openSetting,
+  setOpenSettings,
   handleLeaveInboxFunction,
+  setError,
+  setOpenChat,
 }) {
-  const [openSetting, setOpenSettings] = useState(false);
-
   return (
     <div>
       {openSetting === false ? (
@@ -21,26 +22,34 @@ export default function ChatBox({
             <h1>{inboxName}</h1>
             <button
               onClick={() => {
-                handleFunction(setOpenSettings);
+                setOpenSettings(true);
               }}
             >
               Settings
             </button>
           </div>
 
-          {inboxMessages.map((message) => (
-            <MessageStack
-              key={message.id}
-              message={message}
-              user={user}
-              lastSeenMessage={lastSeenMessage}
-            />
-          ))}
+          {Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
+            inboxMessages.map((message) => (
+              <MessageStack
+                key={message.id}
+                message={message}
+                user={user}
+                lastSeenMessage={lastSeenMessage}
+              />
+            ))
+          ) : (
+            <p>No messages</p>
+          )}
         </div>
       ) : (
         <InboxSettings
           inboxMembers={inboxMembers}
+          setError={setError}
+          userId={user.id}
+          inboxId={inboxId}
           handleLeaveInboxFunction={handleLeaveInboxFunction}
+          setOpenChat={setOpenChat}
         ></InboxSettings>
       )}
     </div>
