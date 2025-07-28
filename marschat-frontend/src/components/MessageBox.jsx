@@ -1,13 +1,17 @@
-export default function MessageBox({ message, lastSeenMessage }) {
+export default function MessageBox({ message, lastSeenMessage, isOwn }) {
   return (
     <>
       <div>
         <p>{message.content}</p>
 
-        {new Date(message.createdAt) < new Date(lastSeenMessage.createdAt) ? (
-          <p>✓✓</p>
+        {isOwn === false && lastSeenMessage ? (
+          new Date(message.createdAt) < new Date(lastSeenMessage.createdAt) ? (
+            <p>✓✓</p>
+          ) : (
+            <p>✓</p>
+          )
         ) : (
-          <p>✓</p>
+          <p></p>
         )}
       </div>
     </>

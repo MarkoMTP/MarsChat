@@ -75,14 +75,37 @@ describe("Chat Box", () => {
       },
     ];
 
+    const inboxId = "i1";
+
+    const openSetting = false;
+
+    const setOpenSettings = vi.mock();
+
+    const handleLeaveInboxFunction = vi.mock();
+
+    const setError = vi.mock();
+
+    const setOpenChat = vi.mock();
+
+    const setLastSeenMessage = vi.mock();
+
+    const fetchLastSeenMessage = vi.mock();
+
     render(
       <ChatBox
-        inboxMembers={inboxMembers}
-        inboxMessages={inboxMessages}
-        lastSeenMessage={lastSeenMessage}
-        handleFunction={mockFn}
+        inboxId={inboxId}
         inboxName={inboxName}
+        inboxMessages={inboxMessages}
+        inboxMembers={inboxMembers}
+        lastSeenMessage={lastSeenMessage}
+        setLastSeenMessage={setLastSeenMessage}
+        fetchLastSeenMessage={fetchLastSeenMessage}
         user={user}
+        openSetting={openSetting}
+        setOpenSettings={setOpenSettings}
+        handleLeaveInboxFunction={handleLeaveInboxFunction}
+        setError={setError}
+        setOpenChat={setOpenChat}
       />
     );
     expect(screen.getByText(/message 1/i)).toBeInTheDocument();
@@ -93,8 +116,8 @@ describe("Chat Box", () => {
   });
 
   it("When inbox settings buttons is clicked it triggers an open group settings function", async () => {
-    const mockFn = vi.fn();
     const inboxName = "Inbox Name";
+    const mockFn = vi.fn();
     const user = {
       id: "1",
       userName: "Test 1",
@@ -149,14 +172,38 @@ describe("Chat Box", () => {
         username: "test 2",
       },
     ];
+
+    const inboxId = "i1";
+
+    const openSetting = false;
+
+    const setOpenSettings = vi.mock();
+
+    const handleLeaveInboxFunction = vi.mock();
+
+    const setError = vi.mock();
+
+    const setOpenChat = vi.mock();
+
+    const setLastSeenMessage = vi.mock();
+
+    const fetchLastSeenMessage = vi.mock();
+
     render(
       <ChatBox
-        inboxMembers={inboxMembers}
-        inboxMessages={inboxMessages}
-        lastSeenMessage={lastSeenMessage}
-        handleFunction={mockFn}
+        inboxId={inboxId}
         inboxName={inboxName}
+        inboxMessages={inboxMessages}
+        inboxMembers={inboxMembers}
+        lastSeenMessage={lastSeenMessage}
+        setLastSeenMessage={setLastSeenMessage}
+        fetchLastSeenMessage={fetchLastSeenMessage}
         user={user}
+        openSetting={openSetting}
+        setOpenSettings={setOpenSettings}
+        handleLeaveInboxFunction={handleLeaveInboxFunction}
+        setError={setError}
+        setOpenChat={setOpenChat}
       />
     );
 

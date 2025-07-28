@@ -1,5 +1,6 @@
 import MessageStack from "./MessageStack";
 import InboxSettings from "./InboxSettings";
+import { useEffect } from "react";
 
 export default function ChatBox({
   inboxId,
@@ -7,6 +8,8 @@ export default function ChatBox({
   inboxMessages,
   inboxMembers,
   lastSeenMessage,
+  setLastSeenMessage,
+  fetchLastSeenMessage,
   user,
   openSetting,
   setOpenSettings,
@@ -14,6 +17,15 @@ export default function ChatBox({
   setError,
   setOpenChat,
 }) {
+  useEffect(() => {
+    const getLastSeenMessage = async () => {
+      const res = await fetchLastSeenMessage(inboxId);
+      setLastSeenMessage(res);
+    };
+
+    getLastSeenMessage();
+  }, [inboxId, fetchLastSeenMessage, setLastSeenMessage]);
+
   return (
     <div>
       {openSetting === false ? (

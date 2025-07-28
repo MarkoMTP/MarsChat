@@ -11,6 +11,7 @@ export default function MessageStack({ message, user, lastSeenMessage }) {
       <MessageBox
         message={message}
         lastSeenMessage={lastSeenMessage}
+        isOwn={isOwn}
       ></MessageBox>
     </div>
   );

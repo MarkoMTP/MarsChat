@@ -15,7 +15,15 @@ describe("Message box", () => {
       createdAt: "2024-11-20T12:35:00Z",
     };
 
-    render(<MessageBox message={message} lastSeenMessage={lastSeenMessage} />);
+    const isOwn = false;
+
+    render(
+      <MessageBox
+        message={message}
+        lastSeenMessage={lastSeenMessage}
+        isOwn={isOwn}
+      />
+    );
 
     expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
     expect(screen.getByText(/✓✓/i)).toBeInTheDocument();
@@ -31,10 +39,40 @@ describe("Message box", () => {
       content: "last seen message",
       createdAt: "2024-11-20T12:35:00Z",
     };
+    const isOwn = false;
 
-    render(<MessageBox message={message} lastSeenMessage={lastSeenMessage} />);
+    render(
+      <MessageBox
+        message={message}
+        lastSeenMessage={lastSeenMessage}
+        isOwn={isOwn}
+      />
+    );
 
     expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
     expect(screen.getByText(/✓/i)).toBeInTheDocument();
+  });
+
+  it("Renders a message from another user without a checkmark for seen", async () => {
+    const message = {
+      content: "test message 1",
+      createdAt: "2024-11-20T12:36:00Z", // UTC time
+    };
+
+    const lastSeenMessage = {
+      content: "last seen message",
+      createdAt: "2024-11-20T12:35:00Z",
+    };
+    const isOwn = true;
+
+    render(
+      <MessageBox
+        message={message}
+        lastSeenMessage={lastSeenMessage}
+        isOwn={isOwn}
+      />
+    );
+    expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
+    expect(screen.queryByText(/✓/i)).not.toBeInTheDocument();
   });
 });
