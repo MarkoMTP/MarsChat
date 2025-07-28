@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import jwtDecode from "jwt-decode";
 import ChatBox from "../components/ChatBox";
+import userEvent from "@testing-library/user-event";
 
 vi.mock("jwt-decode", () => ({
   default: vi.fn(),
@@ -19,7 +20,6 @@ describe("Chat Box", () => {
 
   it("Renders all messages and name of inbox", async () => {
     const inboxName = "Inbox Name";
-    const mockFn = vi.fn();
     const user = {
       id: "1",
       userName: "Test 1",
@@ -79,17 +79,17 @@ describe("Chat Box", () => {
 
     const openSetting = false;
 
-    const setOpenSettings = vi.mock();
+    const setOpenSettings = vi.fn();
 
-    const handleLeaveInboxFunction = vi.mock();
+    const handleLeaveInboxFunction = vi.fn();
 
-    const setError = vi.mock();
+    const setError = vi.fn();
 
-    const setOpenChat = vi.mock();
+    const setOpenChat = vi.fn();
 
-    const setLastSeenMessage = vi.mock();
+    const setLastSeenMessage = vi.fn();
 
-    const fetchLastSeenMessage = vi.mock();
+    const fetchLastSeenMessage = vi.fn();
 
     render(
       <ChatBox
@@ -116,8 +116,9 @@ describe("Chat Box", () => {
   });
 
   it("When inbox settings buttons is clicked it triggers an open group settings function", async () => {
+    const userSet = userEvent.setup();
+
     const inboxName = "Inbox Name";
-    const mockFn = vi.fn();
     const user = {
       id: "1",
       userName: "Test 1",
@@ -177,17 +178,17 @@ describe("Chat Box", () => {
 
     const openSetting = false;
 
-    const setOpenSettings = vi.mock();
+    const setOpenSettings = vi.fn();
 
-    const handleLeaveInboxFunction = vi.mock();
+    const handleLeaveInboxFunction = vi.fn();
 
-    const setError = vi.mock();
+    const setError = vi.fn();
 
-    const setOpenChat = vi.mock();
+    const setOpenChat = vi.fn();
 
-    const setLastSeenMessage = vi.mock();
+    const setLastSeenMessage = vi.fn();
 
-    const fetchLastSeenMessage = vi.mock();
+    const fetchLastSeenMessage = vi.fn();
 
     render(
       <ChatBox
@@ -209,7 +210,7 @@ describe("Chat Box", () => {
 
     const settingsButton = screen.getByRole("button", { name: /Settings/i });
 
-    await fireEvent.click(settingsButton);
-    expect(mockFn).toBeCalledTimes(1);
+    await userSet.click(settingsButton);
+    expect(setOpenSettings).toBeCalledTimes(1);
   });
 });
