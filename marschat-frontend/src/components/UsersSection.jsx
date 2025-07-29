@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import api from "../api";
 import UserComponent from "./UserComponent";
 
 export default function UsersSection({ users }) {
@@ -7,9 +5,13 @@ export default function UsersSection({ users }) {
     <div>
       <h2>Users Section</h2>
       <div>
-        {users.map((user) => (
-          <UserComponent key={user.id} user={user} onClick={() => {}} />
-        ))}
+        {Array.isArray(users) && users.length > 0 ? (
+          users.map((user) => (
+            <UserComponent key={user.id} user={user} onClick={() => {}} />
+          ))
+        ) : (
+          <p>No users </p>
+        )}
       </div>
     </div>
   );

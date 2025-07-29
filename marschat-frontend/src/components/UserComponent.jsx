@@ -2,9 +2,20 @@ import { jwtDecode } from "jwt-decode";
 
 export default function UserComponent({ user, onClick }) {
   const token = localStorage.getItem("token");
-  const decoded = jwtDecode(token);
+  let loggedInUserId = null;
 
-  const loggedInUserId = decoded.id;
+  if (typeof token === "string") {
+    try {
+      const decoded = jwtDecode(token);
+      loggedInUserId = decoded.id;
+    } catch (err) {
+      console.error("Invalid token:", err);
+    }
+  }
+
+  if (!loggedInUserId) {
+    return <p>Cannot send messages: User not authenticated.</p>;
+  }
 
   return (
     <div>
