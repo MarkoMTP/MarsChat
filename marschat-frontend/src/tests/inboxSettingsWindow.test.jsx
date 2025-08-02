@@ -17,10 +17,14 @@ describe("Inbox Settings Window", () => {
     ];
 
     const mockFn = vi.fn();
+
+    const setError = vi.fn();
+
     render(
       <InboxSettings
         inboxMembers={inboxMembers}
         handleLeaveInboxFunction={mockFn}
+        setError={setError}
       ></InboxSettings>
     );
 
@@ -42,10 +46,14 @@ describe("Inbox Settings Window", () => {
     ];
 
     const mockFn = vi.fn();
+
+    const setError = vi.fn();
+
     render(
       <InboxSettings
         inboxMembers={inboxMembers}
         handleLeaveInboxFunction={mockFn}
+        setError={setError}
       ></InboxSettings>
     );
 
