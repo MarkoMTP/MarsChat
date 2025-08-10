@@ -6,7 +6,7 @@ export default async function getAllMessagesController(req, res) {
   try {
     const messages = await getAllMessages(inboxId);
 
-    return res.status(200).send("Messages fetched");
+    return res.status(200).send(messages);
   } catch (err) {
     console.error("Error fetching messages:", err);
     return res.status(500).json({ error: "Failed to fetch messages" });
