@@ -20,17 +20,22 @@ export default function ChatBox({
   useEffect(() => {
     const getLastSeenMessage = async () => {
       const res = await fetchLastSeenMessage(inboxId);
-      setLastSeenMessage(res);
+
+      if (res) {
+        setLastSeenMessage(res);
+      } else {
+        return;
+      }
     };
 
     getLastSeenMessage();
   }, [inboxId, fetchLastSeenMessage, setLastSeenMessage]);
 
   return (
-    <div>
+    <div className="bg-red">
       {openSetting === false ? (
         <div>
-          <div className="Top section">
+          <div>
             <h1>{inboxName}</h1>
             <button
               onClick={() => {

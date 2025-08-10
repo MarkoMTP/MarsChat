@@ -1,18 +1,28 @@
 import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { use, useEffect, useState } from "react";
+
+//Components
 import ChatBox from "./ChatBox";
 import InboxesSection from "./InboxesSection";
+import MessageInput from "./MessageInput";
+import UsersSection from "./UsersSection";
+
+//Middleware functions
 import fetchInboxes from "../middleware/fetchInboxesFunction";
 import fetchUser from "../middleware/fetchUser";
 import handleLeaveInboxFunction from "../middleware/handleLeaveInboxFunction";
+import fetchLastSeenMessage from "../middleware/fetchLastSeenMessage";
+import fetchUsers from "../middleware/fetchUsers";
 
 export default function HomePage() {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [users, setUsers] = useState([]);
   const [inboxes, setInboxes] = useState([]);
   const [openSetting, setOpenSettings] = useState(false);
   const [openChat, setOpenChat] = useState();
+  const [lastSeenMessage, setLastSeenMessage] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -47,23 +57,32 @@ export default function HomePage() {
     getInboxes();
   }, []);
 
+  useEffect(() => {
+    const getUsers = async () => {
+      const res = await fetchUsers();
+      setUsers(res);
+    };
+
+    getUsers();
+  }, []);
+
   return (
     <>
-      <h1>Welcome</h1>
+      <h1 className="text-red-500 font-bold text-4xl">Welcome</h1>
       {user ? <h2>{user.username}</h2> : <p>Loading user...</p>}
-
       <InboxesSection
         inboxes={inboxes}
         setOpenChat={setOpenChat}
       ></InboxesSection>
-
       {openChat && (
         <ChatBox
           inboxId={openChat.id}
           inboxName={openChat.name}
           inboxMessages={openChat.messages}
           inboxMembers={openChat.members}
-          lastSeenMessage={openChat.lastSeenMessage}
+          lastSeenMessage={lastSeenMessage}
+          setLastSeenMessage={setLastSeenMessage}
+          fetchLastSeenMessage={fetchLastSeenMessage}
           user={user}
           openSetting={openSetting}
           setOpenSettings={setOpenSettings}
@@ -72,6 +91,9 @@ export default function HomePage() {
           setOpenChat={setOpenChat}
         />
       )}
+
+      <UsersSection users={users}></UsersSection>
+      <MessageInput></MessageInput>
     </>
   );
 }
