@@ -18,7 +18,7 @@ export default function InboxComponent({ inbox, setOpenChat }) {
     duration-200 
     ease-in-out
   "
-        setOpenChat={() => setOpenChat(inbox)}
+        onClick={() => setOpenChat(inbox)}
       >
         Open Chat
       </button>
