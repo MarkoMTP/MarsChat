@@ -36,7 +36,7 @@ describe("Inbox Component", () => {
       id: "1",
       name: "Test",
     };
-    render(<InboxComponent inbox={inbox} onClick={mockFn} />);
+    render(<InboxComponent inbox={inbox} setOpenChat={mockFn} />);
 
     await fireEvent.click(screen.getByRole("button", { name: /open chat/i }));
 
