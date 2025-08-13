@@ -6,6 +6,11 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
+app.use((req, res, next) => {
+  req.user = { id: "u1" };
+  next();
+});
+
 const testUser = { id: "u1" };
 let testToken;
 
@@ -38,7 +43,10 @@ beforeEach(async () => {
     where: {
       OR: [
         { id: { in: ["im1", "im2", "im3"] } },
-        { userId: "u4", inboxId: "i1" }, // test that adds u4 to i1
+        { userId: "u4", inboxId: "i1" },
+
+        // test that adds u4 to i1 // test that adds u4 to i1
+        // test that adds u4 to i1 // test that adds u4 to i1
       ],
     },
   });
@@ -129,7 +137,24 @@ describe("Message tests", () => {
       .set("Authorization", `Bearer ${testToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.text).toMatch("Messages fetched");
+    expect(res.body).toMatchObject([
+      {
+        content: "Message seen",
+        createdAt: expect.any(String),
+        id: "m1",
+        inboxId: "i1",
+        mediaUrl: null,
+        senderId: "u1",
+      },
+      {
+        content: "Message seen",
+        createdAt: expect.any(String),
+        id: "m55",
+        inboxId: "i1",
+        mediaUrl: null,
+        senderId: "u1",
+      },
+    ]);
   });
 
   it("Deletes message successfully", async () => {
@@ -150,76 +175,6 @@ describe("Message tests", () => {
 
     expect(res.status).toBe(404);
     expect(res.text).toMatch("Message not found in the database");
-  });
-});
-
-// INBOX ROUTES
-describe("Inbox Tests", () => {
-  it("Creates an inbox correctly", async () => {
-    const res = await request(app)
-      .post("/inbox")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json")
-      .send({ name: "Inbox Test" });
-
-    expect(res.status).toBe(200);
-    expect(res.text).toMatch("Inbox created successfully");
-  });
-
-  it("Fails to create inbox with missing name", async () => {
-    const res = await request(app)
-      .post("/inbox")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json")
-      .send({ name: "" });
-
-    expect(res.status).toBe(400);
-    expect(res.text).toMatch("Inbox name missing");
-  });
-
-  it("fetches inbox successfully", async () => {
-    const res = await request(app)
-      .get("/inbox/i4")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json");
-    expect(res.status).toBe(200);
-    expect(res.text).toBe("Successfully fetched all inboxes for user");
-  });
-
-  it("returns 400 when inboxId is missing", async () => {
-    const res = await request(app).get("/inbox/");
-    // Supertest will 404 before hitting the controller, so you need to manually call it if you really want to test the missing ID case.
-    expect(res.status).toBe(404);
-  });
-
-  it("Fetches all inboxes for the user", async () => {
-    const res = await request(app)
-      .get("/inboxes")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json");
-
-    expect(res.status).toBe(200);
-    expect(res.text).toMatch(/Successfully fetched/);
-  });
-
-  it("Deletes a inbox", async () => {
-    const res = await request(app)
-      .delete("/inbox/i3")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json");
-
-    expect(res.status).toBe(200);
-    expect(res.text).toMatch("Inbox successfully deleted");
-  });
-
-  it("Fails because inbox does not exist", async () => {
-    const res = await request(app)
-      .delete("/inbox/4")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json");
-
-    expect(res.status).toBe(404);
-    expect(res.text).toMatch("Inbox does not exist");
   });
 });
 
@@ -315,5 +270,113 @@ describe("Inbox Member Deletion Tests", () => {
     expect(res.body.error).toMatch("Failed to delete inbox member");
 
     prisma.inboxMember.deleteMany = original; // Restore original
+  });
+});
+
+// INBOX ROUTES
+describe("Inbox Tests", () => {
+  it("Creates an inbox correctly", async () => {
+    const res = await request(app)
+      .post("/inbox")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ name: "Inbox Test" });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Inbox created successfully");
+  });
+
+  it("Fails to create inbox with missing name", async () => {
+    const res = await request(app)
+      .post("/inbox")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ name: "" });
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch("Inbox name missing");
+  });
+
+  it("fetches inbox successfully", async () => {
+    const res = await request(app)
+      .get("/inbox/i4")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: "i4",
+      isGroup: false,
+      name: "Test Inbox",
+    });
+  });
+
+  it("returns 400 when inboxId is missing", async () => {
+    const res = await request(app).get("/inbox/");
+    // Supertest will 404 before hitting the controller, so you need to manually call it if you really want to test the missing ID case.
+    expect(res.status).toBe(404);
+  });
+
+  it("Fetches all inboxes for the user", async () => {
+    const res = await request(app)
+      .get("/inboxes")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject([
+      {
+        createdAt: expect.any(String),
+        id: "i1",
+        isGroup: false,
+        lastMsgAt: null,
+        name: "Direct Chat",
+      },
+    ]);
+  });
+
+  it("Deletes a inbox", async () => {
+    const res = await request(app)
+      .delete("/inbox/i3")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Inbox successfully deleted");
+  });
+
+  it("Fails because inbox does not exist", async () => {
+    const res = await request(app)
+      .delete("/inbox/4")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Inbox does not exist");
+  });
+
+  it("Finds an inbox with loggedInUserId and userId", async () => {
+    const res = await request(app)
+      .get("/inbox/direct/u2")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: expect.any(String),
+      isGroup: false,
+      members: expect.any(Array),
+    });
+  });
+
+  it("Does not find an inbox with loggedInUserId and userId", async () => {
+    const res = await request(app)
+      .get("/inbox/direct/u1")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json");
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch(
+      /{\"error\":\"Cannot create a DM with yourself\"}/i
+    );
   });
 });

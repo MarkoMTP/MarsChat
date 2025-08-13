@@ -20,6 +20,7 @@ import removeUserFromInbox from "./controllers/userRelatedControllers/removeUser
 import { getAllUsers, getInboxById } from "./queries.js";
 import getInboxController from "./controllers/userRelatedControllers/getInboxController.js";
 import getUserById from "./controllers/userRelatedControllers/getUserController.js";
+import getOrCreateInbox from "./controllers/messageRelatedControllers/getOrCreateInbox.js";
 
 const router = express.Router();
 
@@ -74,6 +75,12 @@ router.get(
   "/inbox/:inboxId/messages",
   passport.authenticate("jwt", { session: false }),
   getAllMessagesController
+);
+
+router.get(
+  "/inbox/direct/:userId",
+  passport.authenticate("jwt", { session: false }),
+  getOrCreateInbox
 );
 
 router.post(
