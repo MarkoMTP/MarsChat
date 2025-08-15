@@ -137,24 +137,81 @@ describe("Message tests", () => {
       .set("Authorization", `Bearer ${testToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject([
-      {
-        content: "Message seen",
-        createdAt: expect.any(String),
-        id: "m1",
-        inboxId: "i1",
-        mediaUrl: null,
-        senderId: "u1",
-      },
-      {
-        content: "Message seen",
-        createdAt: expect.any(String),
-        id: "m55",
-        inboxId: "i1",
-        mediaUrl: null,
-        senderId: "u1",
-      },
-    ]);
+    expect(res.body).toMatchObject({
+      createdAt: expect.any(String),
+      id: "i1",
+      isGroup: false,
+      lastMsgAt: null,
+      members: [
+        {
+          createdAt: expect.any(String),
+          id: "im1",
+          inboxId: "i1",
+          role: "MEMBER",
+          user: {
+            bio: "bio1",
+            createdAt: expect.any(String),
+            id: "u1",
+            password: "pw1",
+            profilePicUrl: null,
+            username: "User1",
+          },
+          userId: "u1",
+        },
+        {
+          createdAt: expect.any(String),
+          id: "im2",
+          inboxId: "i1",
+          role: "MEMBER",
+          user: {
+            bio: "bio2",
+            createdAt: expect.any(String),
+            id: "u2",
+            password: "pw2",
+            profilePicUrl: null,
+            username: "User2",
+          },
+          userId: "u2",
+        },
+      ],
+      messages: [
+        {
+          content: "Message seen",
+          createdAt: expect.any(String),
+          id: "m1",
+          inboxId: "i1",
+          mediaUrl: null,
+          reads: [],
+          sender: {
+            bio: "bio1",
+            createdAt: expect.any(String),
+            id: "u1",
+            password: "pw1",
+            profilePicUrl: null,
+            username: "User1",
+          },
+          senderId: "u1",
+        },
+        {
+          content: "Message seen",
+          createdAt: expect.any(String),
+          id: "m55",
+          inboxId: "i1",
+          mediaUrl: null,
+          reads: [],
+          sender: {
+            bio: "bio1",
+            createdAt: expect.any(String),
+            id: "u1",
+            password: "pw1",
+            profilePicUrl: null,
+            username: "User1",
+          },
+          senderId: "u1",
+        },
+      ],
+      name: "Direct Chat",
+    });
   });
 
   it("Deletes message successfully", async () => {
