@@ -21,9 +21,9 @@ export default function HomePage() {
   const [users, setUsers] = useState([]);
   const [inboxes, setInboxes] = useState([]);
   const [openSetting, setOpenSettings] = useState(false);
-  const [openChat, setOpenChat] = useState();
+  const [openChat, setOpenChat] = useState({});
   const [lastSeenMessage, setLastSeenMessage] = useState(null);
-  const [error, setError] = useState(null);
+  //const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -59,12 +59,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const getUsers = async () => {
-      const res = await fetchUsers();
+      const res = await fetchUsers(userId);
       setUsers(res);
     };
 
     getUsers();
-  }, []);
+  }, [userId]);
 
   return (
     <>
@@ -87,12 +87,12 @@ export default function HomePage() {
           openSetting={openSetting}
           setOpenSettings={setOpenSettings}
           handleLeaveInboxFunction={handleLeaveInboxFunction}
-          setError={setError}
+          //setError={setError}
           setOpenChat={setOpenChat}
         />
       )}
 
-      <UsersSection users={users}></UsersSection>
+      <UsersSection users={users} setOpenChat={setOpenChat}></UsersSection>
       <MessageInput></MessageInput>
     </>
   );

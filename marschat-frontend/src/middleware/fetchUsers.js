@@ -1,10 +1,14 @@
 import api from "../api";
 
-export default async function fetchUsers() {
+export default async function fetchUsers(loggedInUserId) {
   try {
-    const users = await api.get("/users");
+    const response = await api.get("/users");
 
-    return users.data;
+    const users = response.data;
+
+    const filteredUsers = users.filter((user) => user.id !== loggedInUserId);
+
+    return filteredUsers;
   } catch (err) {
     console.error("Failed to fetch users:", err);
   }
