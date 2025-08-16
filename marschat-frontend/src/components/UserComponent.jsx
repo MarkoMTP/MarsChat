@@ -1,4 +1,4 @@
-export default function UserComponent({ user, onClick, setOpenChat }) {
+export default function UserComponent({ user, onClick }) {
   return (
     <div>
       <h1>{user.username}</h1>
@@ -18,7 +18,7 @@ export default function UserComponent({ user, onClick, setOpenChat }) {
     duration-200 
     ease-in-out
   "
-        onClick={() => onClick(user.id, setOpenChat)}
+        onClick={() => onClick()}
       >
         Send Message
       </button>

@@ -12,6 +12,7 @@ export default function UsersSection({ users, setOpenChat }) {
               key={user.id}
               user={user}
               onClick={() => openChatFromSendMessage(user.id, setOpenChat)}
+              setOpenChat={setOpenChat}
             />
           ))
         ) : (
