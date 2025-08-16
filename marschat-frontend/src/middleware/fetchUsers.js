@@ -2,7 +2,7 @@ import api from "../api";
 
 export default async function fetchUsers(loggedInUserId) {
   try {
-    const response = await api.get("/users");
+    const response = await api.get("/users/others");
 
     const users = response.data;
 
