@@ -1,5 +1,5 @@
 import prisma from "../../prisma/prismaClient.js";
-import { findUserById } from "../../queries"; // keep your helper
+import { findUserById } from "../../queries.js"; // keep your helper
 
 export default async function getOrCreateInbox(req, res) {
   try {
@@ -27,7 +27,12 @@ export default async function getOrCreateInbox(req, res) {
             { members: { every: { userId: { in: [requesterId, userId] } } } },
           ],
         },
-        include: { members: true },
+        include: {
+          members: true,
+          messages: {
+            orderBy: { createdAt: "asc" },
+          },
+        },
       });
       if (existing) return existing;
 
@@ -41,12 +46,16 @@ export default async function getOrCreateInbox(req, res) {
           { inboxId: created.id, userId: requesterId },
           { inboxId: created.id, userId },
         ],
-        // skipDuplicates: true, // optional safety if you already have a unique constraint
       });
 
       return tx.inbox.findUnique({
         where: { id: created.id },
-        include: { members: true },
+        include: {
+          members: true,
+          messages: {
+            orderBy: { createdAt: "asc" },
+          },
+        },
       });
     });
 
