@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-export default function MessageInput({ onSend }) {
+export default function MessageInput({ onSend, inboxId }) {
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!message.trim()) return;
-    onSend(message);
+    onSend(message, inboxId);
     setMessage("");
   };
 

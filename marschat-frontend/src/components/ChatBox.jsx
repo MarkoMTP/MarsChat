@@ -1,6 +1,8 @@
 import MessageStack from "./MessageStack";
+import MessageInput from "./MessageInput";
 import InboxSettings from "./InboxSettings";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import onMessageSend from "../middleware/postMessageToInbox";
 
 export default function ChatBox({
   inboxId,
@@ -69,6 +71,8 @@ export default function ChatBox({
           setOpenChat={setOpenChat}
         ></InboxSettings>
       )}
+
+      <MessageInput onSend={onMessageSend} inboxId={inboxId}></MessageInput>
     </div>
   );
 }

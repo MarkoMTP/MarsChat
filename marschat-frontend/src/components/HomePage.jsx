@@ -5,7 +5,6 @@ import { use, useEffect, useState } from "react";
 //Components
 import ChatBox from "./ChatBox";
 import InboxesSection from "./InboxesSection";
-import MessageInput from "./MessageInput";
 import UsersSection from "./UsersSection";
 
 //Middleware functions
@@ -93,7 +92,6 @@ export default function HomePage() {
       )}
 
       <UsersSection users={users} setOpenChat={setOpenChat}></UsersSection>
-      <MessageInput></MessageInput>
     </>
   );
 }
