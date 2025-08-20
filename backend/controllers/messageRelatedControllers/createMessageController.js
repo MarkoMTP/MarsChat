@@ -6,8 +6,12 @@ export default async function createMessageController(req, res) {
   const userId = req.user.id;
 
   try {
-    if (!messageText || !userId) {
-      return res.status(400).send("Message text or user id is missing");
+    if (!messageText) {
+      return res.status(400).send("Message text  is missing");
+    }
+
+    if (!userId) {
+      return res.status(400).send("User id is missing");
     }
 
     await createNewMsg(messageText, userId, inboxId);
