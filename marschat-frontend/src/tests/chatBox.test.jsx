@@ -21,8 +21,10 @@ describe("Chat Box", () => {
   it("Renders all messages and name of inbox", async () => {
     const inboxName = "Inbox Name";
     const user = {
-      id: "1",
-      userName: "Test 1",
+      data: {
+        id: "1",
+        username: "Test 1",
+      },
     };
     const lastSeenMessage = {
       id: "1",
@@ -34,7 +36,7 @@ describe("Chat Box", () => {
     const inboxMessages = [
       {
         id: "1",
-        content: "test message 1",
+        content: "message 1",
         createdAt: "2024-11-20T12:33:00Z",
         senderId: "1",
         inboxId: "1",
@@ -42,14 +44,14 @@ describe("Chat Box", () => {
 
       {
         id: "2",
-        content: "test message 2",
+        content: "message 2",
         createdAt: "2024-11-20T12:35:00Z",
         senderId: "2",
         inboxId: "1",
       },
       {
         id: "3",
-        content: "test message 3",
+        content: "message 3",
         createdAt: "2024-11-20T12:37:00Z",
         senderId: "1",
         inboxId: "1",
@@ -120,8 +122,10 @@ describe("Chat Box", () => {
 
     const inboxName = "Inbox Name";
     const user = {
-      id: "1",
-      userName: "Test 1",
+      data: {
+        id: "1",
+        userName: "Test 1",
+      },
     };
     const lastSeenMessage = {
       id: "1",
