@@ -14,8 +14,10 @@ describe("Message stack", () => {
     };
 
     const user = {
-      id: "1",
-      username: "test",
+      data: {
+        id: "1",
+        username: "test",
+      },
     };
 
     const lastSeenMessage = {
@@ -33,7 +35,7 @@ describe("Message stack", () => {
     );
 
     const stack = screen.getByTestId("message-stack-1");
-    expect(stack.className).toContain("flex justify-start");
+    expect(stack.className).toContain("flex w-full justify-start");
     expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
   });
 
@@ -46,8 +48,10 @@ describe("Message stack", () => {
     };
 
     const user = {
-      id: "2",
-      username: "test",
+      data: {
+        id: "2",
+        username: "test",
+      },
     };
 
     const lastSeenMessage = {
@@ -65,7 +69,7 @@ describe("Message stack", () => {
     );
 
     const stack = screen.getByTestId("message-stack-1");
-    expect(stack.className).toContain("flex justify-end");
+    expect(stack.className).toContain("flex w-full justify-end");
     expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
   });
 });
