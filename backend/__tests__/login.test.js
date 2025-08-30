@@ -2,29 +2,9 @@ import request from "supertest";
 import app from "../server.js";
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import prisma from "../prisma/prismaClient.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
-
-beforeEach(async () => {
-  await prisma.user.deleteMany({ where: { id: "u5" } }); // SAFE
-
-  const hashedPassword = await bcrypt.hash("testpass", 10);
-
-  await prisma.user.create({
-    data: {
-      id: "u5",
-      username: "testuser",
-      password: hashedPassword,
-      bio: "testing",
-    },
-  });
-});
-
-afterAll(async () => {
-  await prisma.$disconnect();
-});
 
 describe("Login Route", () => {
   it("returns token for valid credentials", async () => {

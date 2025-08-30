@@ -5,30 +5,6 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import dotenv from "dotenv";
 dotenv.config();
 
-//prisma setup
-
-import prisma from "../prisma/prismaClient.js";
-
-const testUser = { id: "u9" };
-let testToken;
-
-afterAll(async () => {
-  await prisma.$disconnect();
-});
-beforeEach(async () => {
-  await prisma.user.deleteMany({ where: { id: "u9" } }); // SAFE
-
-  await prisma.user.create({
-    data: {
-      id: "u9",
-      username: "originalUser",
-      password: "12345678",
-      bio: "Initial bio",
-    },
-  });
-  testToken = jwt.sign(testUser, process.env.JWT_SECRET);
-});
-
 describe("PATCH /users/:userId", () => {
   it("should update a user's profile", async () => {
     const res = await request(app)

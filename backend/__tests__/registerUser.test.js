@@ -4,31 +4,6 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import dotenv from "dotenv";
 dotenv.config();
 
-import prisma from "../prisma/prismaClient.js";
-
-afterAll(async () => {
-  await prisma.$disconnect();
-});
-
-beforeEach(async () => {
-  // Clean up users created during tests
-  await prisma.user.deleteMany({
-    where: {
-      OR: [{ id: "uReg" }, { username: "Test" }],
-    },
-  });
-
-  // Seed a known user (used in 'user already exists' test)
-  await prisma.user.create({
-    data: {
-      id: "uReg",
-      username: "marsman",
-      password: "12345678",
-      bio: "Hello",
-    },
-  });
-});
-
 describe("Register user route test", () => {
   it("Successfully registers a user", async () => {
     const res = await request(app)
