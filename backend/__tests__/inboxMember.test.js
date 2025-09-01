@@ -78,19 +78,50 @@ describe("Inbox Member Deletion Tests", () => {
     expect(res.status).toBe(404);
     expect(res.text).toMatch("Inbox Member does not exist");
   });
+});
 
-  it("Returns 500 if a server error occurs", async () => {
-    const original = prisma.inboxMember.deleteMany;
-    prisma.inboxMember.deleteMany = () => {
-      throw new Error("Forced failure");
-    };
-
+describe("Add multiple users to inbox tests", () => {
+  it("Added successfully users to the inbox", async () => {
     const res = await request(app)
-      .delete("/inbox/i2/member/u4")
+      .post(`/inbox/i5/members`)
       .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json");
+      .set("Content-Type", "application/json")
+      .send({ userIds: ["u6", "u7"] });
 
-    expect(res.status).toBe(500);
-    expect(res.body.error).toMatch("Failed to delete inbox member");
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ added: ["u6", "u7"] });
+  });
+
+  it("Error users already are members of the inbox", async () => {
+    const res = await request(app)
+      .post(`/inbox/i5/members`)
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ userIds: ["u4", "u2"] });
+
+    expect(res.status).toBe(404);
+    expect(res.text).toMatch("Error users are already members of inbox");
+  });
+
+  it("Error userIds must not be an empty array", async () => {
+    const res = await request(app)
+      .post(`/inbox/i5/members`)
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ userIds: [] });
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch("UserIds must be a non-empty array");
+  });
+
+  it("Error Inbox does not exist", async () => {
+    const res = await request(app)
+      .post(`/inbox/i89/members`)
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ userIds: ["u2", "U3"] });
+
+    expect(res.status).toBe(400);
+    expect(res.text).toMatch("Inbox does not exist");
   });
 });

@@ -21,6 +21,7 @@ import { getAllUsers, getInboxById } from "./queries.js";
 import getInboxController from "./controllers/userRelatedControllers/getInboxController.js";
 import getUserById from "./controllers/userRelatedControllers/getUserController.js";
 import getOrCreateInbox from "./controllers/messageRelatedControllers/getOrCreateInbox.js";
+import addMultipleMembersController from "./controllers/userRelatedControllers/addUsersToInbox.js";
 
 const router = express.Router();
 
@@ -98,6 +99,12 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   addUserToInboxController
 );
+router.post(
+  "/inbox/:inboxId/members",
+  passport.authenticate("jwt", { session: false }),
+  addMultipleMembersController
+);
+
 router.post(
   "/message/:messageId/seen",
   passport.authenticate("jwt", { session: false }),

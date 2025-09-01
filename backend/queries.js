@@ -90,14 +90,18 @@ export async function messageRead(messageId, userId) {
 
 // Get all messages for a specific inbox
 export async function getAllMessages(inboxId) {
-  return await prisma.message.findMany({
-    where: {
-      inboxId: inboxId,
-    },
-    orderBy: {
-      createdAt: "asc",
+  const inbox = await prisma.inbox.findUnique({
+    where: { id: inboxId },
+    include: {
+      members: { include: { user: true } },
+      messages: {
+        include: { sender: true, reads: true },
+        orderBy: { createdAt: "asc" },
+      },
     },
   });
+
+  return inbox;
 }
 
 // Get a specific message by ID
@@ -143,7 +147,20 @@ export async function getInboxesForUser(userId) {
     where: {
       members: {
         some: {
-          userId: userId,
+          userId,
+        },
+      },
+    },
+    include: {
+      members: {
+        include: {
+          user: true, // so you get username, bio, etc.
+        },
+      },
+      messages: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          sender: true, // so you can display who sent it
         },
       },
     },
@@ -151,9 +168,14 @@ export async function getInboxesForUser(userId) {
 }
 
 // get inbox with id
-export async function getInboxById(id) {
+export async function getInboxById(inboxId) {
   return await prisma.inbox.findUnique({
-    where: { id },
+    where: { id: inboxId },
+    include: {
+      members: {
+        include: { user: true },
+      },
+    },
   });
 }
 
@@ -183,5 +205,29 @@ export async function deleteInboxMemberByIds(userId, inboxId) {
 export async function deleteInboxById(id) {
   return await prisma.inbox.delete({
     where: { id },
+  });
+}
+
+// Find a inbox with member ids
+export async function findInboxWithMemberIds(loggedInUserId, userId) {
+  return await prisma.inbox.findFirst({
+    where: {
+      isGroup: false, // remove if you also want groups
+      AND: [
+        { members: { some: { userId: loggedInUserId } } },
+        { members: { some: { userId } } },
+        // ensure ONLY these two are members
+        { members: { every: { userId: { in: [loggedInUserId, userId] } } } },
+      ],
+    },
+    include: {
+      members: {
+        select: {
+          id: true,
+          userId: true,
+          user: { select: { id: true, username: true } }, // drop if you don't need user
+        },
+      },
+    },
   });
 }
