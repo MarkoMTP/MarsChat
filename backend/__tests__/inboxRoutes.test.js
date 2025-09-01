@@ -16,17 +16,6 @@ describe("Inbox Tests", () => {
     expect(res.text).toMatch("Inbox created successfully");
   });
 
-  it("Creates an group inbox correctly", async () => {
-    const res = await request(app)
-      .post("/inbox/group")
-      .set("Authorization", `Bearer ${testToken}`)
-      .set("Content-Type", "application/json")
-      .send({ name: "Inbox Test" });
-
-    expect(res.status).toBe(200);
-    expect(res.text).toMatch("Inbox created successfully");
-  });
-
   it("Fails to create inbox with missing name", async () => {
     const res = await request(app)
       .post("/inbox")
@@ -119,5 +108,48 @@ describe("Inbox Tests", () => {
     expect(res.text).toMatch(
       /{\"error\":\"Cannot create a DM with yourself\"}/i
     );
+  });
+});
+
+describe("Create Group Inbox Controller", () => {
+  it("should create a new group inbox with members", async () => {
+    const res = await request(app)
+      .post("/inbox/group") // adjust to your route
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({
+        name: "My Test Group",
+        userIds: ["u2", "u3"],
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.message).toMatch(/Inbox created successfully/i);
+    expect(res.body.inbox).toMatchObject({
+      id: expect.any(String),
+      name: "My Test Group",
+      isGroup: true,
+    });
+  });
+
+  it("should return 400 if inbox name is missing", async () => {
+    const res = await request(app)
+      .post("/inbox/group")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ userIds: ["u2", "u3"] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/Inbox name missing/i);
+  });
+
+  it("should return 400 if userIds is empty", async () => {
+    const res = await request(app)
+      .post("/inbox/group")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ name: "Empty Group", userIds: [] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/userIds must be a non-empty array/i);
   });
 });
