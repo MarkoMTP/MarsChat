@@ -16,6 +16,17 @@ describe("Inbox Tests", () => {
     expect(res.text).toMatch("Inbox created successfully");
   });
 
+  it("Creates an group inbox correctly", async () => {
+    const res = await request(app)
+      .post("/inbox/group")
+      .set("Authorization", `Bearer ${testToken}`)
+      .set("Content-Type", "application/json")
+      .send({ name: "Inbox Test" });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toMatch("Inbox created successfully");
+  });
+
   it("Fails to create inbox with missing name", async () => {
     const res = await request(app)
       .post("/inbox")

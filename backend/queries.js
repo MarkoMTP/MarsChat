@@ -131,6 +131,15 @@ export async function createNewPrivateInbox(name) {
   });
 }
 
+export async function createNewGroupInbox(name) {
+  await prisma.inbox.create({
+    data: {
+      name,
+      isGroup: true,
+    },
+  });
+}
+
 // Add a user to an inbox
 export async function addUserToInbox(inboxId, userId) {
   await prisma.inboxMember.create({

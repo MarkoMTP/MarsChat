@@ -22,6 +22,7 @@ import getInboxController from "./controllers/userRelatedControllers/getInboxCon
 import getUserById from "./controllers/userRelatedControllers/getUserController.js";
 import getOrCreateInbox from "./controllers/messageRelatedControllers/getOrCreateInbox.js";
 import addMultipleMembersController from "./controllers/userRelatedControllers/addUsersToInbox.js";
+import createGroupInboxController from "./controllers/messageRelatedControllers/createGroupInbox.js";
 
 const router = express.Router();
 
@@ -93,6 +94,12 @@ router.post(
   "/inbox",
   passport.authenticate("jwt", { session: false }),
   createInboxController
+);
+
+router.post(
+  "/inbox/group",
+  passport.authenticate("jwt", { session: false }),
+  createGroupInboxController
 );
 router.post(
   "/inbox/:inboxId/member",
