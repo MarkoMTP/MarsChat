@@ -13,8 +13,10 @@ import handleLeaveInboxFunction from "../middleware/handleLeaveInboxFunction";
 import fetchLastSeenMessage from "../middleware/fetchLastSeenMessage";
 import fetchUsers from "../middleware/fetchUsers";
 import logout from "../middleware/logout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -22,6 +24,7 @@ export default function HomePage() {
   const [openSetting, setOpenSettings] = useState(false);
   const [openChat, setOpenChat] = useState(null); // start null, not {}
   const [lastSeenMessage, setLastSeenMessage] = useState(null);
+  const navigate = useNavigate();
 
   // Get userId from JWT
   useEffect(() => {
@@ -36,22 +39,37 @@ export default function HomePage() {
     }
   }, []);
 
+  const loadInboxes = async () => {
+    try {
+      setInboxes(await fetchInboxes());
+    } catch (err) {
+      console.error("Failed to fetch inboxes:", err);
+    }
+  };
+
   // Fetch logged-in user
   useEffect(() => {
     if (!userId) return;
     (async () => setUser(await fetchUser(userId)))();
   }, [userId]);
 
-  // Fetch inboxes (once on mount)
   useEffect(() => {
-    (async () => setInboxes(await fetchInboxes()))();
+    loadInboxes();
   }, []);
 
+  // Keep this
+  useEffect(() => {
+    loadInboxes();
+  }, [location.key]);
   // Fetch users (exclude me on the server or filter client-side)
   useEffect(() => {
     if (!userId) return;
     (async () => setUsers(await fetchUsers(userId)))();
   }, [userId]);
+
+  useEffect(() => {
+    loadInboxes();
+  }, [location.key]);
 
   return (
     <div className="h-screen bg-gray-50 flex">
@@ -76,6 +94,13 @@ export default function HomePage() {
           <div className="px-2 pb-4">
             <UsersSection users={users} setOpenChat={setOpenChat} />
           </div>
+
+          <button
+            onClick={() => navigate("/chat/new")}
+            className="bg-sky-500 text-white px-4 py-2 rounded"
+          >
+            + New Group
+          </button>
         </div>
 
         <div className="p-4 border-t">

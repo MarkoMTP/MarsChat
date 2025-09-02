@@ -21,7 +21,7 @@ describe("MessageInput", () => {
     await userEvent.type(textarea, "Test message");
     await userEvent.click(button);
 
-    expect(mockSend).toHaveBeenCalledWith("Test message");
+    expect(mockSend).toHaveBeenCalledWith("Test message", undefined);
     expect(textarea).toHaveValue("");
   });
 });

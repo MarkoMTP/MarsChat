@@ -51,7 +51,22 @@ function LoginForm() {
           required
           className="input"
         />
-        <button type="submit" className="button">
+        <button
+          type="submit"
+          className="bg-sky-500 
+    text-white 
+    px-4 py-2 
+    rounded-lg 
+    shadow-md 
+    hover:bg-sky-600 
+    hover:cursor-pointer
+    focus:outline-none 
+    focus:ring-2 
+    focus:ring-sky-300 
+    transition 
+    duration-200 
+    ease-in-out"
+        >
           Login
         </button>
       </form>

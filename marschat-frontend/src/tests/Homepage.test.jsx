@@ -98,7 +98,12 @@ describe("Home Page", () => {
   }));
 
   it("Renders all", async () => {
-    render(<HomePage></HomePage>);
+    render(
+      <MemoryRouter>
+        {" "}
+        <HomePage></HomePage>{" "}
+      </MemoryRouter>
+    );
 
     expect(screen.getByText("MarsChat")).toBeInTheDocument();
   });
@@ -115,7 +120,6 @@ describe("Home Page", () => {
       expect(screen.getByText("Inbox 1")).toBeInTheDocument();
     });
 
-    screen.debug();
     const openChatButtons = screen.getAllByRole("button", {
       name: /Open Chat/i,
     });

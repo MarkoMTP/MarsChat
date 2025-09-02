@@ -6,8 +6,6 @@ export default async function openChatFromSendMessage(userId, setOpenChat) {
 
     setOpenChat(inbox.data);
   } catch (err) {
-    console.error("Failed to setOpenChat messages:", err);
+    console.error("Failed to setOpenChat:", err);
   }
 }
-
-//moras ovo git add
