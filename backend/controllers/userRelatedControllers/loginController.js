@@ -12,9 +12,7 @@ export default async function logincontroller(req, res) {
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      return res
-        .status(400)
-        .send(`Password is not correct, 1: ${password}, 2: ${user.password}`);
+      return res.status(400).send(`Password is not correct`);
     }
 
     //create a JWT token

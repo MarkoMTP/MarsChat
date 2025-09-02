@@ -26,8 +26,10 @@ async function resetAndSeed() {
     data: [
       { id: "u1", username: "User1", password: "pw1", bio: "bio1" },
       { id: "u2", username: "User2", password: "pw2", bio: "bio2" },
-      { id: "u3", username: "User3", password: "pw3", bio: "bio3" },
-      { id: "u4", username: "User4", password: "pw3", bio: "bio3" },
+      { id: "u3", username: "User3", password: "pw3", bio: "bio" },
+      { id: "u4", username: "User4", password: "pw3", bio: "bio" },
+      { id: "u6", username: "User6", password: "pw3", bio: "bio" },
+      { id: "u7", username: "User7", password: "pw3", bio: "bio" },
 
       // RegisterForm test user
       { id: "uReg", username: "marsman", password: "12345678", bio: "Hello" },
@@ -56,6 +58,7 @@ async function resetAndSeed() {
       { id: "i2", isGroup: false, name: "Direct Chat" },
       { id: "i3", isGroup: false, name: "Delete test" },
       { id: "i4", isGroup: false, name: "Test Inbox" },
+      { id: "i5", isGroup: true, name: "Inbox for adding multiple" },
     ],
   });
 
@@ -64,6 +67,9 @@ async function resetAndSeed() {
       { id: "im1", userId: "u1", inboxId: "i1" },
       { id: "im2", userId: "u2", inboxId: "i1" },
       { id: "im3", userId: "u4", inboxId: "i2" },
+
+      { id: "im4", userId: "u4", inboxId: "i5" },
+      { id: "im5", userId: "u2", inboxId: "i5" },
     ],
   });
 
