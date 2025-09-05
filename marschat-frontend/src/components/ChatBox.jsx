@@ -5,6 +5,7 @@ import InboxSettings from "./InboxSettings";
 import onMessageSend from "../middleware/postMessageToInbox";
 
 export default function ChatBox({
+  inbox,
   inboxId,
   inboxName,
   inboxMessages = [],
@@ -60,10 +61,12 @@ export default function ChatBox({
           <InboxSettings
             inboxMembers={inboxMembers}
             setError={setError}
-            userId={user?.id}
+            user={user}
             inboxId={inboxId}
+            inbox={inbox}
             handleLeaveInboxFunction={handleLeaveInboxFunction}
             setOpenChat={setOpenChat}
+            setOpenSettings={setOpenSettings}
           />
         ) : Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
           <div className="space-y-2">

@@ -147,6 +147,7 @@ export default function HomePage() {
         <section className="flex-1 overflow-y-auto p-4">
           {openChat?.id ? (
             <ChatBox
+              inbox={openChat}
               inboxId={openChat.id}
               inboxName={openChat.name}
               inboxMessages={openChat.messages}

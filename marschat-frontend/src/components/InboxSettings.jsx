@@ -1,27 +1,57 @@
 export default function InboxSettings({
   inboxMembers,
-  setError,
   handleLeaveInboxFunction,
-  userId,
+  user,
   inboxId,
   setOpenChat,
+  setOpenSettings,
+  inbox,
 }) {
   const handleLeaveInboxClick = async () => {
-    const success = await handleLeaveInboxFunction(userId, inboxId);
+    const success = await handleLeaveInboxFunction(user.data.id, inboxId);
+    console.log(user);
     if (success) {
-      setOpenChat(false);
+      setOpenSettings(false);
+      setOpenChat(null);
     } else {
-      setError("Failed to leave the inbox.");
+      console.error("Failed to leave the inbox.");
     }
   };
+
+  const handleGoBack = async () => {
+    try {
+      await setOpenSettings(false);
+      await setOpenChat(inbox);
+    } catch {
+      console.error("Failed to go back the inbox.");
+    }
+  };
+
+  console.log(inboxMembers);
+
   return (
     <>
       <h1>In group: </h1>
+
       {inboxMembers.map((member) => (
-        <p key={member.id}>{member.username}</p>
+        <p key={member.user.id} className="color-black">
+          {member.user.username}
+        </p>
       ))}
 
-      <button onClick={handleLeaveInboxClick}>Leave Group</button>
+      <button
+        className="p-3 bg-sky-500 hover:bg-sky-700 rounded-lg"
+        onClick={handleLeaveInboxClick}
+      >
+        Leave Group Chat
+      </button>
+
+      <button
+        className="p-3 bg-red-500 hover:bg-red-700 rounded-lg ml-2"
+        onClick={handleGoBack}
+      >
+        Go back to chat
+      </button>
     </>
   );
 }
