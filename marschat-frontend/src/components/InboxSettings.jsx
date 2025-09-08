@@ -1,3 +1,6 @@
+import { useState } from "react";
+import AddNewUsersToGroup from "./AddNewUsersForm";
+
 export default function InboxSettings({
   inboxMembers,
   handleLeaveInboxFunction,
@@ -7,9 +10,10 @@ export default function InboxSettings({
   setOpenSettings,
   inbox,
 }) {
+  const [openAddUsersForm, setOpenAddUsersForm] = useState(false);
+
   const handleLeaveInboxClick = async () => {
     const success = await handleLeaveInboxFunction(user.data.id, inboxId);
-    console.log(user);
     if (success) {
       setOpenSettings(false);
       setOpenChat(null);
@@ -18,26 +22,41 @@ export default function InboxSettings({
     }
   };
 
-  const handleGoBack = async () => {
-    try {
-      await setOpenSettings(false);
-      await setOpenChat(inbox);
-    } catch {
-      console.error("Failed to go back the inbox.");
-    }
+  const handleGoBack = () => {
+    setOpenSettings(false);
+    setOpenChat(inbox);
   };
 
-  console.log(inboxMembers);
+  // If Add Users form is open, render it
+  if (openAddUsersForm) {
+    return (
+      <AddNewUsersToGroup
+        inboxId={inboxId}
+        existingMembers={inboxMembers}
+        onClose={() => setOpenAddUsersForm(false)}
+      />
+    );
+  }
 
   return (
-    <>
-      <h1>In group: </h1>
+    <div>
+      <h1>In group:</h1>
 
       {inboxMembers.map((member) => (
         <p key={member.user.id} className="color-black">
           {member.user.username}
         </p>
       ))}
+
+      {/* Only show in group inboxes */}
+      {inbox.isGroup && (
+        <button
+          className="p-3 bg-green-500 hover:bg-green-700 rounded-lg"
+          onClick={() => setOpenAddUsersForm(true)}
+        >
+          Add new user
+        </button>
+      )}
 
       <button
         className="p-3 bg-sky-500 hover:bg-sky-700 rounded-lg"
@@ -52,6 +71,6 @@ export default function InboxSettings({
       >
         Go back to chat
       </button>
-    </>
+    </div>
   );
 }
