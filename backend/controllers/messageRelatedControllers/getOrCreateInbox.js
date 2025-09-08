@@ -28,9 +28,12 @@ export default async function getOrCreateInbox(req, res) {
           ],
         },
         include: {
-          members: true,
-          messages: {
-            orderBy: { createdAt: "asc" },
+          members: {
+            select: {
+              id: true,
+              userId: true,
+              user: { select: { id: true, username: true } }, // drop if you don't need user
+            },
           },
         },
       });
