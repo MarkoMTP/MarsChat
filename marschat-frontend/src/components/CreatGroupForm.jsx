@@ -4,6 +4,7 @@ import api from "../api";
 import UserBoxInGroupCreationForm from "./UserBoxInGroupCreationForm";
 import { jwtDecode } from "jwt-decode";
 import fetchUsers from "../middleware/fetchUsers";
+import handleCreateGroup from "../middleware/handleCreateGroupChat";
 
 function CreateGroupForm() {
   const [groupName, setGroupName] = useState("");
@@ -31,24 +32,8 @@ function CreateGroupForm() {
     (async () => setUsers(await fetchUsers(userId)))();
   }, [userId]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const finalUserIds = Array.from(new Set([...choosenUsers, userId]));
-
-      await api.post("/inbox/group", {
-        userIds: finalUserIds,
-        name: groupName,
-      });
-
-      navigate("/");
-    } catch (error) {
-      console.error(
-        "Creating inbox Error:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  const handleSubmit = (e) =>
+    handleCreateGroup({ e, choosenUsers, userId, groupName, navigate });
 
   const handleGoBack = () => {
     navigate("/", { replace: true });
