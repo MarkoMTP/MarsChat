@@ -114,12 +114,13 @@ describe("Inbox Tests", () => {
 describe("Create Group Inbox Controller", () => {
   it("should create a new group inbox with members", async () => {
     const res = await request(app)
-      .post("/inbox/group") // adjust to your route
+      .post("/inbox/group")
       .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
       .send({
         name: "My Test Group",
         userIds: ["u2", "u3"],
+        adminId: "u1", // 👈 logged-in user as admin
       });
 
     expect(res.status).toBe(201);
@@ -136,7 +137,7 @@ describe("Create Group Inbox Controller", () => {
       .post("/inbox/group")
       .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
-      .send({ userIds: ["u2", "u3"] });
+      .send({ userIds: ["u2", "u3"], adminId: "u1" }); // 👈 still pass adminId
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/Inbox name missing/i);
@@ -147,7 +148,7 @@ describe("Create Group Inbox Controller", () => {
       .post("/inbox/group")
       .set("Authorization", `Bearer ${testToken}`)
       .set("Content-Type", "application/json")
-      .send({ name: "Empty Group", userIds: [] });
+      .send({ name: "Empty Group", userIds: [], adminId: "u1" }); // 👈 adminId required
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/userIds must be a non-empty array/i);
