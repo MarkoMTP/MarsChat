@@ -1,7 +1,7 @@
 import prisma from "../../prisma/prismaClient.js";
 
 export default async function createGroupInboxController(req, res) {
-  const { name, userIds } = req.body;
+  const { name, userIds, adminId } = req.body;
 
   if (!name) {
     return res.status(400).json({ error: "Inbox name missing" });
@@ -20,7 +20,16 @@ export default async function createGroupInboxController(req, res) {
       // 2. Filter unique IDs
       const filteredUserIds = [...new Set(userIds)];
 
-      // 3. Add members
+      // 3. Add Admin
+      await tx.inboxMember.create({
+        data: {
+          userId: adminId,
+          inboxId: createdInbox.id,
+          role: "ADMIN",
+        },
+      });
+
+      // 4. Add members
       await tx.inboxMember.createMany({
         data: filteredUserIds.map((userId) => ({
           userId,
