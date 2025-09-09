@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
 import UserBoxInGroupCreationForm from "./UserBoxInGroupCreationForm";
 import { jwtDecode } from "jwt-decode";
 import fetchUsers from "../middleware/fetchUsers";

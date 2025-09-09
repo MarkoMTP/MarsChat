@@ -13,7 +13,7 @@ export default function InboxSettings({
   const [openAddUsersForm, setOpenAddUsersForm] = useState(false);
 
   const handleLeaveInboxClick = async () => {
-    const success = await handleLeaveInboxFunction(user.data.id, inboxId);
+    const success = await handleLeaveInboxFunction(user, inboxId);
     if (success) {
       setOpenSettings(false);
       setOpenChat(null);

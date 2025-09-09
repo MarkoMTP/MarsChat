@@ -33,7 +33,6 @@ vi.stubGlobal("localStorage", {
 });
 
 import api from "../api";
-import fetchUsers from "../middleware/fetchUsers";
 
 describe("AddNewUsersToGroup", () => {
   beforeEach(() => {
