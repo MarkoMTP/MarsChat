@@ -28,10 +28,25 @@ export async function findUserName(username) {
   });
 }
 
-// Find user by ID
+// Find user by ID, with inbox memberships and inbox details
 export async function findUserById(userId) {
   return await prisma.user.findUnique({
     where: { id: userId },
+    include: {
+      inboxes: {
+        include: {
+          inbox: {
+            include: {
+              members: {
+                include: {
+                  user: true, // pull in each member's user data
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 }
 
