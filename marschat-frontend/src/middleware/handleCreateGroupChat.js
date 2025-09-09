@@ -9,11 +9,10 @@ export default async function handleCreateGroup({
 }) {
   e.preventDefault();
   try {
-    const finalUserIds = Array.from(new Set([...choosenUsers, userId]));
-
     await api.post("/inbox/group", {
-      userIds: finalUserIds,
+      userIds: choosenUsers,
       name: groupName,
+      adminId: userId,
     });
 
     navigate("/");
