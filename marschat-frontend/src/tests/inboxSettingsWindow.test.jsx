@@ -3,93 +3,57 @@ import { describe, expect, it, vi } from "vitest";
 import InboxSettings from "../components/InboxSettings";
 
 describe("Inbox Settings Window", () => {
+  const inbox = {
+    id: "i1",
+    name: "inbox",
+    isGroup: true,
+  };
+
+  const inboxMembers = [
+    { user: { id: "1", username: "test 1" } },
+    { user: { id: "2", username: "test 2" } },
+  ];
+
+  const makeUser = (role = "MEMBER") => ({
+    data: {
+      id: "3",
+      username: "test 3",
+      inboxes: [
+        {
+          inboxId: inbox.id,
+          role,
+          inbox: {
+            id: inbox.id,
+            name: inbox.name,
+            members: inboxMembers,
+          },
+        },
+      ],
+    },
+  });
+
   it("Renders all members", () => {
-    const inboxMembers = [
-      {
-        user: {
-          id: "1",
-          username: "test 1",
-        },
-      },
-
-      {
-        user: {
-          id: "2",
-          username: "test 2",
-        },
-      },
-    ];
-
-    const user = {
-      data: {
-        id: "3",
-        username: "test 3",
-      },
-    };
-
-    const inbox = {
-      id: "i1",
-      name: "inbox",
-      isGroup: true,
-    };
-
-    const mockFn = vi.fn();
-
-    const setOpenChat = vi.fn();
-
-    const setOpenSettings = vi.fn();
+    const user = makeUser();
 
     render(
       <InboxSettings
         inboxMembers={inboxMembers}
-        handleLeaveInboxFunction={mockFn}
+        handleLeaveInboxFunction={vi.fn()}
         user={user}
         inboxId={inbox.id}
-        setOpenChat={setOpenChat}
-        setOpenSettings={setOpenSettings}
+        setOpenChat={vi.fn()}
+        setOpenSettings={vi.fn()}
         inbox={inbox}
-      ></InboxSettings>
+      />
     );
 
     expect(screen.getByText(/test 1/i)).toBeInTheDocument();
     expect(screen.getByText(/test 2/i)).toBeInTheDocument();
   });
 
-  it("Triggers leave inbox function ", async () => {
-    const inboxMembers = [
-      {
-        user: {
-          id: "1",
-          username: "test 1",
-        },
-      },
-
-      {
-        user: {
-          id: "2",
-          username: "test 2",
-        },
-      },
-    ];
-
-    const user = {
-      data: {
-        id: "3",
-        username: "test 3",
-      },
-    };
-
-    const inbox = {
-      id: "i1",
-      name: "inbox",
-      isGroup: true,
-    };
-
+  it("Triggers leave inbox function", async () => {
+    const user = makeUser();
     const mockFn = vi.fn();
-
-    const setOpenChat = vi.fn();
-
-    const setOpenSettings = vi.fn();
 
     render(
       <InboxSettings
@@ -97,67 +61,36 @@ describe("Inbox Settings Window", () => {
         handleLeaveInboxFunction={mockFn}
         user={user}
         inboxId={inbox.id}
-        setOpenChat={setOpenChat}
-        setOpenSettings={setOpenSettings}
+        setOpenChat={vi.fn()}
+        setOpenSettings={vi.fn()}
         inbox={inbox}
-      ></InboxSettings>
+      />
     );
 
-    const leaveBtn = screen.getByRole("button", { name: /leave group/i });
+    fireEvent.click(screen.getByRole("button", { name: /Leave Group Chat/i }));
 
-    await fireEvent.click(leaveBtn);
-    expect(mockFn).toBeCalledTimes(1);
+    await waitFor(() => {
+      expect(mockFn).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("calls setOpenSettings(false) and setOpenChat(inbox) when Go back is clicked", async () => {
-    const inboxMembers = [
-      {
-        user: {
-          id: "1",
-          username: "test 1",
-        },
-      },
-
-      {
-        user: {
-          id: "2",
-          username: "test 2",
-        },
-      },
-    ];
-
-    const user = {
-      data: {
-        id: "3",
-        username: "test 3",
-      },
-    };
-
-    const inbox = {
-      id: "i1",
-      name: "inbox",
-      isGroup: true,
-    };
-
-    const mockFn = vi.fn();
-
+    const user = makeUser();
     const MockSetOpenChat = vi.fn();
-
     const MockSetOpenSettings = vi.fn();
 
     render(
       <InboxSettings
         inboxMembers={inboxMembers}
-        handleLeaveInboxFunction={mockFn}
+        handleLeaveInboxFunction={vi.fn()}
         user={user}
         inboxId={inbox.id}
         setOpenChat={MockSetOpenChat}
         setOpenSettings={MockSetOpenSettings}
         inbox={inbox}
-      ></InboxSettings>
+      />
     );
 
-    // Click the "Go back" button
     fireEvent.click(screen.getByRole("button", { name: /Go back to chat/i }));
 
     await waitFor(() => {
