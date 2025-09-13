@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "test:integration": "vitest run src/tests/integration/**.test.{js,jsx}"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
