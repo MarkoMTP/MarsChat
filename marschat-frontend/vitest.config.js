@@ -1,10 +1,13 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  plugins: [react(), tailwindcss()],
   test: {
-    include: [
-      "tests/**/*.test.{js,jsx}", // unit tests
-      "src/tests/integration/**.test.{js,jsx}", // integration tests
-    ],
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.js",
+    include: ["src/tests/integration/**/*.test.{js,jsx}"],
   },
 });
