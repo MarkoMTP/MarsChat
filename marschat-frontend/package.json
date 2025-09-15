@@ -7,9 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:integration": "vitest run src/tests/integration/**.test.{js,jsx}"
+    "test": "vitest -c vite.config.js",
+    "test:unit": "vitest -c vite.config.js src/tests/**.test.{js,jsx}",
+    "test:integration": "vitest -c vite.config.js src/tests/integration/**/*.test.{js,jsx}"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
