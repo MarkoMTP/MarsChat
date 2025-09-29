@@ -13,6 +13,7 @@ import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import CreateGroupForm from "../../components/CreatGroupForm";
 
 import HomePage from "../../components/HomePage";
+import LoginPage from "../../components/LoginPage";
 
 import onMessageSend from "../../middleware/postMessageToInbox";
 // Mock JWT
@@ -237,9 +238,6 @@ vi.mock("../../middleware/fetchLastSeenMessage", () => ({
 vi.mock("../../middleware/handleLeaveInboxFunction", () => ({
   default: vi.fn(),
 }));
-vi.mock("../../middleware/logout", () => ({
-  default: vi.fn(),
-}));
 
 describe("HomePage integration", () => {
   beforeEach(() => {
@@ -422,10 +420,36 @@ describe("HomePage integration", () => {
     const sendMessageBtn = await screen.findByRole("button", { name: "Send" });
     await user.click(sendMessageBtn);
 
-    // Step 4: assert middleware was called correctly
+    // Step 4: qassert middleware was called correctly
     expect(onMessageSend).toHaveBeenCalledWith("New message", "inbox1");
 
-    // Step 5: assert input is cleared
+    // Step 5: assert input is cleareds
     expect(inputField).toHaveValue("");
+  });
+
+  it("User clicks logout button and redirects to /login", async () => {
+    const user = userEvent.setup();
+
+    // Mock window.location
+    delete window.location;
+    window.location = { href: "" };
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const logoutBtns = await screen.findAllByRole("button", {
+      name: /Logout/i,
+    });
+
+    // Click the first Logout button (sidebar)
+    await user.click(logoutBtns[0]);
+
+    // ✅ Assert redirect happened
+    expect(window.location.href).toBe("/login");
   });
 });
