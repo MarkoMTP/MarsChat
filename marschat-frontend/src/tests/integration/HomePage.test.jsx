@@ -221,6 +221,60 @@ vi.mock("../../middleware/fetchInboxesFunction", () => ({
           },
         ],
       },
+
+      {
+        id: "inbox2",
+        name: "2nd Group",
+        isGroup: true,
+        createdAt: "2025-09-09T20:56:06.989Z",
+        lastMsgAt: null,
+        members: [
+          {
+            id: "member1",
+            inboxId: "inbox2",
+            role: "member",
+            createdAt: "2025-09-09T20:56:06.995Z",
+            userId: "u1",
+            user: {
+              id: "u1",
+              username: "Alice",
+              bio: "Loves coffee",
+              profilePicUrl: null,
+              createdAt: "2025-08-28T20:51:34.496Z",
+            },
+          },
+          {
+            id: "member2",
+            inboxId: "inbox2",
+            role: "ADMIN",
+            createdAt: "2025-09-10T09:14:07.656Z",
+            userId: "u2",
+            user: {
+              id: "u2",
+              username: "Bob",
+              bio: "Enjoys hiking",
+              profilePicUrl: null,
+              createdAt: "2025-08-30T11:22:07.111Z",
+            },
+          },
+        ],
+        messages: [
+          {
+            id: "msg1",
+            inboxId: "inbox1",
+            content: "Hey Test 2",
+            createdAt: "2025-09-10T09:18:22.641Z",
+            mediaUrl: null,
+            senderId: "u1",
+            sender: {
+              id: "u1",
+              username: "Alice",
+              bio: "Loves coffee",
+              profilePicUrl: null,
+            },
+          },
+        ],
+      },
     ])
   ),
 }));
@@ -236,9 +290,6 @@ vi.mock("../../middleware/fetchUsers", () => ({
 
 vi.mock("../../middleware/fetchLastSeenMessage", () => ({
   default: vi.fn(() => Promise.resolve(null)),
-}));
-vi.mock("../../middleware/handleLeaveInboxFunction", () => ({
-  default: vi.fn(),
 }));
 
 describe("HomePage integration", () => {
@@ -454,7 +505,7 @@ describe("HomePage integration", () => {
     expect(window.location.href).toBe("/login");
   });
 
-  it.only("Admin kicks user out if inbox", async () => {
+  it("Admin kicks user out if inbox", async () => {
     const user = userEvent.setup();
 
     render(
@@ -479,7 +530,30 @@ describe("HomePage integration", () => {
     await user.click(kickOutBtns[1]);
 
     expect(await screen.findByText(/Hey Test/i)).toBeInTheDocument();
+  });
 
-    screen.debug();
+  it("User leaves the group chat", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/chat/new" element={<CreateGroupForm />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    await user.click(openChatButtons[1]);
+
+    const settingsBtn = await screen.findByText(/settings/i);
+
+    await user.click(settingsBtn);
+
+    const leaveGroupBtn = await screen.findByText(/leave group chat/i);
+
+    await user.click(leaveGroupBtn);
+
+    expect(await screen.findByText(/No chat selected/i)).toBeInTheDocument();
   });
 });
