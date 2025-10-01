@@ -160,6 +160,8 @@ vi.mock("../../api", () => ({
       }
       return Promise.reject(new Error(`Unknown POST ${url}`));
     }),
+
+    delete: vi.fn(() => Promise.resolve({ status: 200 })),
   },
 }));
 
@@ -387,7 +389,6 @@ describe("HomePage integration", () => {
 
     await user.click(createGroupBtn);
 
-    screen.debug();
     expect(await screen.findByText(/Inboxes section/i)).toBeInTheDocument();
   });
 
@@ -451,5 +452,34 @@ describe("HomePage integration", () => {
 
     // ✅ Assert redirect happened
     expect(window.location.href).toBe("/login");
+  });
+
+  it.only("Admin kicks user out if inbox", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/chat/new" element={<CreateGroupForm />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    await user.click(openChatButtons[0]);
+
+    expect(await screen.findByText(/Hey Test/i)).toBeInTheDocument();
+
+    const settingsBtn = await screen.findByText(/settings/i);
+
+    await user.click(settingsBtn);
+
+    const kickOutBtns = await screen.findAllByText(/Kick out/i);
+
+    await user.click(kickOutBtns[1]);
+
+    expect(await screen.findByText(/Hey Test/i)).toBeInTheDocument();
+
+    screen.debug();
   });
 });

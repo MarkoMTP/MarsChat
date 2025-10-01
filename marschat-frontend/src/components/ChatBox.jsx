@@ -19,6 +19,7 @@ export default function ChatBox({
   handleLeaveInboxFunction,
   setError,
   setOpenChat,
+  removeUserFromInbox,
 }) {
   const scrollRef = useRef(null);
 
@@ -67,6 +68,7 @@ export default function ChatBox({
             handleLeaveInboxFunction={handleLeaveInboxFunction}
             setOpenChat={setOpenChat}
             setOpenSettings={setOpenSettings}
+            removeUserFromInbox={removeUserFromInbox}
           />
         ) : Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
           <div className="space-y-2">

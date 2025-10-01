@@ -13,6 +13,9 @@ import handleLeaveInboxFunction from "../middleware/handleLeaveInboxFunction";
 import fetchLastSeenMessage from "../middleware/fetchLastSeenMessage";
 import fetchUsers from "../middleware/fetchUsers";
 import logout from "../middleware/logout";
+import openChatFromSendMessage from "../middleware/openChatFromSendMessage";
+import removeUserFromInbox from "../middleware/removeUserFromInbox";
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function HomePage() {
@@ -92,7 +95,11 @@ export default function HomePage() {
             People
           </div>
           <div className="px-2 pb-4">
-            <UsersSection users={users} setOpenChat={setOpenChat} />
+            <UsersSection
+              users={users}
+              setOpenChat={setOpenChat}
+              openChatFromSendMessage={openChatFromSendMessage}
+            />
           </div>
 
           <button
@@ -160,6 +167,7 @@ export default function HomePage() {
               setOpenSettings={setOpenSettings}
               handleLeaveInboxFunction={handleLeaveInboxFunction}
               setOpenChat={setOpenChat}
+              removeUserFromInbox={removeUserFromInbox}
             />
           ) : (
             <div className="h-full grid place-items-center">

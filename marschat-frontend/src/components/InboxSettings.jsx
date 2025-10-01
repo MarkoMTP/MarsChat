@@ -10,6 +10,7 @@ export default function InboxSettings({
   setOpenChat,
   setOpenSettings,
   inbox,
+  removeUserFromInbox,
 }) {
   const [openAddUsersForm, setOpenAddUsersForm] = useState(false);
 
@@ -39,8 +40,6 @@ export default function InboxSettings({
     );
   }
 
-  console.log(inboxMembers);
-
   return (
     <div>
       <h1>In group:</h1>
@@ -52,6 +51,7 @@ export default function InboxSettings({
           user={user}
           inboxId={inboxId}
           setOpenSettings={setOpenSettings}
+          removeUserFromInbox={removeUserFromInbox}
         ></UserInInboxSettingsComponent>
       ))}
 

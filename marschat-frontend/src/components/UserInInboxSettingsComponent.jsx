@@ -1,10 +1,9 @@
-import removeUserFromInbox from "../middleware/removeUserFromInbox";
-
 export default function UserInInboxSettingsComponent({
   member,
   user,
   inboxId,
   setOpenSettings,
+  removeUserFromInbox,
 }) {
   const membership = user.data.inboxes.find((m) => m.inboxId === inboxId);
 
