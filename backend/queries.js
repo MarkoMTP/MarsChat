@@ -170,27 +170,37 @@ export async function getInboxesForUser(userId) {
   return await prisma.inbox.findMany({
     where: {
       members: {
-        some: {
-          userId,
-        },
+        some: { userId },
       },
     },
     include: {
       members: {
         include: {
-          user: true, // so you get username, bio, etc.
+          user: {
+            select: {
+              id: true,
+              username: true,
+              bio: true,
+              profilePicUrl: true,
+            },
+          },
         },
       },
       messages: {
         orderBy: { createdAt: "asc" },
         include: {
-          sender: true, // so you can display who sent it
+          sender: {
+            select: {
+              id: true,
+              username: true,
+              profilePicUrl: true,
+            },
+          },
         },
       },
     },
   });
 }
-
 // get inbox with id
 export async function getInboxById(inboxId) {
   return await prisma.inbox.findUnique({
