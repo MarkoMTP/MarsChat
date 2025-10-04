@@ -1,10 +1,12 @@
 import InboxComponent from "./InboxComponent";
 
 export default function InboxesSection({ inboxes, setOpenChat }) {
+  const groupChats = inboxes.filter((inbox) => inbox.isGroup === true);
+
   return (
     <div className="space-y-3">
-      {Array.isArray(inboxes) && inboxes.length > 0 ? (
-        inboxes.map((inbox) => (
+      {Array.isArray(groupChats) && groupChats.length > 0 ? (
+        groupChats.map((inbox) => (
           <InboxComponent
             key={inbox.id}
             inbox={inbox}
