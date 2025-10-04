@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Components
 import ChatBox from "./ChatBox";
@@ -16,23 +17,22 @@ import logout from "../middleware/logout";
 import openChatFromSendMessage from "../middleware/openChatFromSendMessage";
 import removeUserFromInbox from "../middleware/removeUserFromInbox";
 
-import { useLocation, useNavigate } from "react-router-dom";
-
 export default function HomePage() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [inboxes, setInboxes] = useState([]);
   const [openSetting, setOpenSettings] = useState(false);
-  const [openChat, setOpenChat] = useState(null); // start null, not {}
+  const [openChat, setOpenChat] = useState(null);
   const [lastSeenMessage, setLastSeenMessage] = useState(null);
-  const navigate = useNavigate();
 
-  // Get userId from JWT
+  // Decode JWT for userId
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (typeof token === "string") {
+    if (token) {
       try {
         const decoded = jwtDecode(token);
         setUserId(decoded.id);
@@ -42,6 +42,7 @@ export default function HomePage() {
     }
   }, []);
 
+  // Load inboxes
   const loadInboxes = async () => {
     try {
       setInboxes(await fetchInboxes());
@@ -50,51 +51,50 @@ export default function HomePage() {
     }
   };
 
-  // Fetch logged-in user
+  // Fetch user
   useEffect(() => {
     if (!userId) return;
     (async () => setUser(await fetchUser(userId)))();
   }, [userId]);
 
-  useEffect(() => {
-    loadInboxes();
-  }, []);
-
-  // Keep this
+  // Fetch inboxes on mount + when location changes
   useEffect(() => {
     loadInboxes();
   }, [location.key]);
-  // Fetch users (exclude me on the server or filter client-side)
+
+  // Fetch users list
   useEffect(() => {
     if (!userId) return;
     (async () => setUsers(await fetchUsers(userId)))();
   }, [userId]);
 
-  useEffect(() => {
-    loadInboxes();
-  }, [location.key]);
-
   return (
-    <div className="h-screen bg-gray-50 flex">
+    <div className="h-screen flex bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       {/* Sidebar */}
-      <aside className="hidden md:flex md:flex-col w-72 bg-white border-r">
-        <div className="p-4 border-b">
-          <h1 className="text-xl font-semibold">MarsChat</h1>
-          <p className="text-sm text-gray-500">
+      <aside className="hidden md:flex md:flex-col w-72 bg-white border-r shadow-lg p-5 space-y-6">
+        {/* Header */}
+        <div className="border-b pb-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg p-4 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight">MarsChat</h1>
+          <p className="text-sm mt-1">
             {user ? `Hi, ${user.data.username}` : "Loading user..."}
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto pl-4">
-          <div className="px-4 py-3 text-xs uppercase tracking-wide text-gray-400">
-            Inboxes
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto space-y-8">
+          {/* Inboxes */}
+          <div>
+            <h2 className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+              Inboxes
+            </h2>
+            <InboxesSection inboxes={inboxes} setOpenChat={setOpenChat} />
           </div>
-          <InboxesSection inboxes={inboxes} setOpenChat={setOpenChat} />
 
-          <div className="px-4 pt-4 pb-2 text-xs uppercase tracking-wide text-gray-400">
-            People
-          </div>
-          <div className="px-2 pb-4">
+          {/* People */}
+          <div>
+            <h2 className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+              People
+            </h2>
             <UsersSection
               users={users}
               setOpenChat={setOpenChat}
@@ -102,18 +102,22 @@ export default function HomePage() {
             />
           </div>
 
-          <button
-            onClick={() => navigate("/chat/new")}
-            className="bg-sky-500 text-white px-4 py-2 rounded"
-          >
-            + New Group
-          </button>
+          {/* New Group Button */}
+          <div>
+            <button
+              onClick={() => navigate("/chat/new")}
+              className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition cursor-pointer"
+            >
+              + New Group
+            </button>
+          </div>
         </div>
 
-        <div className="p-4 border-t">
+        {/* Footer / Logout */}
+        <div className="border-t pt-4">
           <button
             onClick={logout}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg px-4 py-2 transition"
+            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg px-4 py-2 font-medium transition cursor-pointer"
           >
             Logout
           </button>
@@ -122,36 +126,17 @@ export default function HomePage() {
 
       {/* Main */}
       <main className="flex-1 flex flex-col">
-        <header className="h-14 bg-white border-b flex items-center justify-between px-4">
-          <div className="min-w-0">
-            {openChat?.id ? (
-              <>
-                <h2 className="text-lg font-semibold truncate">
-                  {openChat.name}
-                </h2>
-                <p className="text-xs text-gray-500">
-                  {openChat?.members?.length ?? 0} members
-                </p>
-              </>
-            ) : (
-              <h2 className="text-lg font-semibold text-gray-600">
-                Select a chat
-              </h2>
-            )}
-          </div>
+        {/* Mobile logout */}
+        <div className="md:hidden">
+          <button
+            onClick={logout}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 text-sm transition cursor-pointer"
+          >
+            Logout
+          </button>
+        </div>
 
-          {/* Mobile logout */}
-          <div className="md:hidden">
-            <button
-              onClick={logout}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 text-sm transition"
-            >
-              Logout
-            </button>
-          </div>
-        </header>
-
-        <section className="flex-1 overflow-y-auto p-4">
+        <section className="flex-1 overflow-y-auto p-6">
           {openChat?.id ? (
             <ChatBox
               inbox={openChat}
@@ -170,11 +155,11 @@ export default function HomePage() {
               removeUserFromInbox={removeUserFromInbox}
             />
           ) : (
-            <div className="h-full grid place-items-center">
-              <div className="text-center">
+            <div className="h-full grid place-items-center text-center text-gray-500">
+              <div>
                 <div className="text-4xl mb-2">💬</div>
                 <h3 className="text-lg font-semibold">No chat selected</h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm">
                   Pick an inbox on the left or start a new conversation.
                 </p>
               </div>
