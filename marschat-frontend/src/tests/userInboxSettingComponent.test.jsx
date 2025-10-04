@@ -32,6 +32,7 @@ describe("UserInInboxSettingsComponent", () => {
         user={baseUser}
         inboxId={inboxId}
         setOpenSettings={mockSetOpenSettings}
+        removeUserFromInbox={removeUserFromInbox}
       />
     );
 
@@ -45,6 +46,7 @@ describe("UserInInboxSettingsComponent", () => {
         user={baseUser}
         inboxId={inboxId}
         setOpenSettings={mockSetOpenSettings}
+        removeUserFromInbox={removeUserFromInbox}
       />
     );
 
@@ -58,6 +60,7 @@ describe("UserInInboxSettingsComponent", () => {
         user={baseUser}
         inboxId={inboxId}
         setOpenSettings={mockSetOpenSettings}
+        removeUserFromInbox={removeUserFromInbox}
       />
     );
 
@@ -84,6 +87,7 @@ describe("UserInInboxSettingsComponent", () => {
         user={nonAdminUser}
         inboxId={inboxId}
         setOpenSettings={mockSetOpenSettings}
+        removeUserFromInbox={removeUserFromInbox}
       />
     );
 

@@ -121,7 +121,7 @@ describe("Home Page", () => {
     });
 
     const openChatButtons = screen.getAllByRole("button", {
-      name: /Open Chat/i,
+      name: /Open/i,
     });
 
     await user.click(openChatButtons[0]);

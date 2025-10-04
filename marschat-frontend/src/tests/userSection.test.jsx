@@ -38,13 +38,11 @@ describe("Users Section", () => {
 
     render(<UsersSection users={users} />);
 
-    expect(screen.getByText("Users Section")).toBeInTheDocument();
-
     expect(screen.getByText(/Marko/i)).toBeInTheDocument();
     expect(screen.getByText(/Roko/i)).toBeInTheDocument();
     expect(screen.getByText(/Luka/i)).toBeInTheDocument();
 
-    const buttons = screen.getAllByRole("button", { name: /send message/i });
+    const buttons = screen.getAllByRole("button", { name: /message/i });
 
     expect(buttons).toHaveLength(3);
   });

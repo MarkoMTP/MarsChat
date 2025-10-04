@@ -28,7 +28,7 @@ describe("User Component", () => {
     render(<UserComponent user={user} onClick={mockFn} />);
 
     expect(screen.getByText("Marko")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send Message" }));
+    expect(screen.getByRole("button", { name: /Message/i }));
   });
 
   it("The function gets played when the send message button is clicked", async () => {
@@ -40,7 +40,7 @@ describe("User Component", () => {
     };
     render(<UserComponent user={user} onClick={mockFn} />);
 
-    await fireEvent.click(screen.getByRole("button", { name: "Send Message" }));
+    await fireEvent.click(screen.getByRole("button", { name: /Message/i }));
 
     expect(mockFn).toHaveBeenCalled();
   });

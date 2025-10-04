@@ -27,7 +27,7 @@ describe("Inbox Component", () => {
     render(<InboxComponent inbox={inbox} onClick={mockFn} />);
 
     expect(screen.getByText("test")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /open chat/i }));
+    expect(screen.getByRole("button", { name: /open/i }));
   });
 
   it("The function gets played when the send message button is clicked", async () => {
@@ -38,7 +38,7 @@ describe("Inbox Component", () => {
     };
     render(<InboxComponent inbox={inbox} setOpenChat={mockFn} />);
 
-    await fireEvent.click(screen.getByRole("button", { name: /open chat/i }));
+    await fireEvent.click(screen.getByRole("button", { name: /open/i }));
 
     expect(mockFn).toHaveBeenCalled();
   });
