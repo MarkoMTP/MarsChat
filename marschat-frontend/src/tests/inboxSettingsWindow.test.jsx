@@ -1,13 +1,31 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import InboxSettings from "../components/InboxSettings";
-import api from "../api";
 
-vi.mock("../api", () => ({
-  default: { delete: vi.fn() },
+// ✅ mock child components so we don't test their internals
+vi.mock("../components/UserInInboxSettingsComponent", () => ({
+  default: () => <div>Mocked User Component</div>,
 }));
 
-describe("Inbox Settings Window", () => {
+vi.mock("../components/AddNewUsersForm", () => ({
+  default: () => <div>Mocked Add User Form</div>,
+}));
+
+// ✅ mock jwt-decode
+vi.mock("jwt-decode", () => ({
+  jwtDecode: vi.fn(() => ({ id: "u1" })),
+}));
+
+describe("InboxSettings (Unit Test)", () => {
+  beforeEach(() => {
+    localStorage.setItem("token", "FAKE_JWT_TOKEN");
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
   const inbox = {
     id: "i1",
     name: "inbox",
@@ -19,25 +37,14 @@ describe("Inbox Settings Window", () => {
     { user: { id: "2", username: "test 2" } },
   ];
 
-  const makeUser = (role = "MEMBER") => ({
+  const makeUser = () => ({
     data: {
       id: "3",
       username: "test 3",
-      inboxes: [
-        {
-          inboxId: inbox.id,
-          role,
-          inbox: {
-            id: inbox.id,
-            name: inbox.name,
-            members: inboxMembers,
-          },
-        },
-      ],
     },
   });
 
-  it("Renders all members", () => {
+  it("renders all members as child components", () => {
     const user = makeUser();
 
     render(
@@ -49,40 +56,105 @@ describe("Inbox Settings Window", () => {
         setOpenChat={vi.fn()}
         setOpenSettings={vi.fn()}
         inbox={inbox}
+        removeUserFromInbox={vi.fn()}
       />
     );
 
-    expect(screen.getByText(/test 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/test 2/i)).toBeInTheDocument();
+    const children = screen.getAllByText("Mocked User Component");
+    expect(children).toHaveLength(2);
   });
 
-  it("Triggers leave inbox function", async () => {
+  it("shows 'Add new user' button only when inbox is a group", () => {
     const user = makeUser();
-    const mockFn = vi.fn();
+
+    const { rerender } = render(
+      <InboxSettings
+        inboxMembers={[]}
+        handleLeaveInboxFunction={vi.fn()}
+        user={user}
+        inboxId={inbox.id}
+        setOpenChat={vi.fn()}
+        setOpenSettings={vi.fn()}
+        inbox={{ ...inbox, isGroup: true }}
+        removeUserFromInbox={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: /add new user/i })
+    ).toBeInTheDocument();
+
+    rerender(
+      <InboxSettings
+        inboxMembers={[]}
+        handleLeaveInboxFunction={vi.fn()}
+        user={user}
+        inboxId={inbox.id}
+        setOpenChat={vi.fn()}
+        setOpenSettings={vi.fn()}
+        inbox={{ ...inbox, isGroup: false }}
+        removeUserFromInbox={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.queryByRole("button", { name: /add new user/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders AddNewUsersToGroup form when 'Add new user' is clicked", () => {
+    const user = makeUser();
 
     render(
       <InboxSettings
-        inboxMembers={inboxMembers}
-        handleLeaveInboxFunction={mockFn}
+        inboxMembers={[]}
+        handleLeaveInboxFunction={vi.fn()}
         user={user}
         inboxId={inbox.id}
         setOpenChat={vi.fn()}
         setOpenSettings={vi.fn()}
         inbox={inbox}
+        removeUserFromInbox={vi.fn()}
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Leave Group Chat/i }));
+    fireEvent.click(screen.getByRole("button", { name: /add new user/i }));
+
+    expect(screen.getByText("Mocked Add User Form")).toBeInTheDocument();
+  });
+
+  it("calls handleLeaveInboxFunction and closes when successful", async () => {
+    const mockLeave = vi.fn().mockResolvedValue(true);
+    const mockSetOpenChat = vi.fn();
+    const mockSetOpenSettings = vi.fn();
+    const user = makeUser();
+
+    render(
+      <InboxSettings
+        inboxMembers={[]}
+        handleLeaveInboxFunction={mockLeave}
+        user={user}
+        inboxId={inbox.id}
+        setOpenChat={mockSetOpenChat}
+        setOpenSettings={mockSetOpenSettings}
+        inbox={inbox}
+        removeUserFromInbox={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /leave group chat/i }));
 
     await waitFor(() => {
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(mockLeave).toHaveBeenCalledWith(user, inbox.id);
+      expect(mockSetOpenSettings).toHaveBeenCalledWith(false);
+      expect(mockSetOpenChat).toHaveBeenCalledWith(null);
     });
   });
 
-  it("calls setOpenSettings(false) and setOpenChat(inbox) when Go back is clicked", async () => {
+  it("calls setOpenSettings(false) and setOpenChat(inbox) when 'Go back to chat' is clicked", async () => {
+    const mockSetOpenChat = vi.fn();
+    const mockSetOpenSettings = vi.fn();
     const user = makeUser();
-    const MockSetOpenChat = vi.fn();
-    const MockSetOpenSettings = vi.fn();
 
     render(
       <InboxSettings
@@ -90,105 +162,18 @@ describe("Inbox Settings Window", () => {
         handleLeaveInboxFunction={vi.fn()}
         user={user}
         inboxId={inbox.id}
-        setOpenChat={MockSetOpenChat}
-        setOpenSettings={MockSetOpenSettings}
+        setOpenChat={mockSetOpenChat}
+        setOpenSettings={mockSetOpenSettings}
         inbox={inbox}
+        removeUserFromInbox={vi.fn()}
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Go back to chat/i }));
+    fireEvent.click(screen.getByRole("button", { name: /go back to chat/i }));
 
     await waitFor(() => {
-      expect(MockSetOpenSettings).toHaveBeenCalledWith(false);
-      expect(MockSetOpenChat).toHaveBeenCalledWith(inbox);
-    });
-  });
-
-  it("succeeds when API resolves", async () => {
-    api.delete.mockResolvedValueOnce({ status: 200 });
-
-    const user = {
-      data: {
-        id: "3",
-        username: "Admin",
-        inboxes: [{ inboxId: "i1", role: "ADMIN" }],
-      },
-    };
-
-    const inbox = {
-      id: "i1",
-      name: "Test Group",
-      isGroup: true,
-      members: [
-        { user: { id: "1", username: "Member 1" } },
-        { user: { id: "2", username: "Member 2" } },
-        { user: { id: "3", username: "Admin" } },
-      ],
-    };
-
-    const setOpenChat = vi.fn();
-    const setOpenSettings = vi.fn();
-
-    render(
-      <InboxSettings
-        inboxMembers={inbox.members}
-        user={user}
-        inboxId={inbox.id}
-        setOpenSettings={setOpenSettings}
-        setOpenChat={setOpenChat}
-        inbox={inbox}
-      />
-    );
-
-    fireEvent.click(screen.getAllByText(/Kick out/i)[0]);
-
-    await waitFor(() => {
-      expect(api.delete).toHaveBeenCalledWith("/inbox/i1/member/1");
-      expect(setOpenSettings).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("fails when API rejects", async () => {
-    const user = {
-      data: {
-        id: "3",
-        username: "Admin",
-        inboxes: [{ inboxId: "i1", role: "ADMIN" }],
-      },
-    };
-
-    const inbox = {
-      id: "i1",
-      name: "Test Group",
-      isGroup: true,
-      members: [
-        { user: { id: "1", username: "Member 1" } },
-        { user: { id: "2", username: "Member 2" } },
-        { user: { id: "3", username: "Admin" } },
-      ],
-    };
-
-    api.delete.mockRejectedValueOnce(new Error("Network error"));
-
-    const setOpenChat = vi.fn();
-    const setOpenSettings = vi.fn();
-
-    render(
-      <InboxSettings
-        inboxMembers={inbox.members}
-        user={user}
-        inboxId={inbox.id}
-        setOpenSettings={setOpenSettings}
-        setOpenChat={setOpenChat}
-        inbox={inbox}
-      />
-    );
-
-    fireEvent.click(screen.getAllByText(/Kick out/i)[0]);
-
-    await waitFor(() => {
-      expect(api.delete).toHaveBeenCalledWith("/inbox/i1/member/1");
-      expect(setOpenSettings).not.toHaveBeenCalled(); // stays open on failure
+      expect(mockSetOpenSettings).toHaveBeenCalledWith(false);
+      expect(mockSetOpenChat).toHaveBeenCalledWith(inbox);
     });
   });
 });
