@@ -41,6 +41,8 @@ describe("Home Page", () => {
             id: "a",
             name: "Inbox 1",
             members: ["1", "2"],
+            isGroup: true,
+
             messages: [
               {
                 content: "Hey Bob!",

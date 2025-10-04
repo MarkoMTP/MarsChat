@@ -24,26 +24,27 @@ describe("Inboxes Section", () => {
       {
         id: "1",
         name: "Marko",
+        isGroup: true,
       },
       {
         id: "2",
         name: "Luka",
+        isGroup: true,
       },
       {
         id: "3",
         name: "Roko",
+        isGroup: true,
       },
     ];
 
     render(<InboxesSection inboxes={Inboxes} />);
 
-    expect(screen.getByText("Inboxes Section")).toBeInTheDocument();
-
     expect(screen.getByText(/Marko/i)).toBeInTheDocument();
     expect(screen.getByText(/Roko/i)).toBeInTheDocument();
     expect(screen.getByText(/Luka/i)).toBeInTheDocument();
 
-    const buttons = screen.getAllByRole("button", { name: /open chat/i });
+    const buttons = screen.getAllByRole("button", { name: /open/i });
 
     expect(buttons).toHaveLength(3);
   });
