@@ -32,7 +32,14 @@ export default async function getOrCreateInbox(req, res) {
             select: {
               id: true,
               userId: true,
-              user: { select: { id: true, username: true } },
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  bio: true,
+                  profilePicUrl: true,
+                },
+              },
             },
           },
           messages: {
