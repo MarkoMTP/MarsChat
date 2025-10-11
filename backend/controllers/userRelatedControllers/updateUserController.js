@@ -2,21 +2,21 @@ import { findUserById, updateUser } from "../../queries.js";
 
 export async function updateUserController(req, res) {
   const { userId } = req.params;
-  const { username, bio, profilePicUrl } = req.body;
+  const { username, bio } = req.body;
 
   try {
-    if (!userId) {
-      return res.status(404).send("UserId not found");
-    }
+    if (!userId) return res.status(404).send("UserId not found");
 
     const foundUser = await findUserById(userId);
+    if (!foundUser) return res.status(404).send("User not found");
 
-    if (!foundUser) {
-      return res.status(404).send("User not found");
+    // 👇 Check if a file was uploaded (multer adds req.file)
+    let profilePicUrl = req.body.profilePicUrl;
+    if (req.file) {
+      profilePicUrl = `/uploads/${req.file.filename}`;
     }
 
     const updatedUser = await updateUser(userId, username, bio, profilePicUrl);
-
     res.status(200).json(updatedUser);
   } catch (err) {
     console.error("Failed to update user:", err);

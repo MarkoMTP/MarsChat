@@ -1,6 +1,9 @@
 import express from "express";
 import passport from "./passport/passport.js";
-
+// routes/userRoutes.js
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 import registerUserController from "./controllers/userRelatedControllers/registerUserController.js";
 import logincontroller from "./controllers/userRelatedControllers/loginController.js";
 
@@ -23,6 +26,20 @@ import getUserById from "./controllers/userRelatedControllers/getUserController.
 import getOrCreateInbox from "./controllers/messageRelatedControllers/getOrCreateInbox.js";
 import addMultipleMembersController from "./controllers/userRelatedControllers/addUsersToInbox.js";
 import createGroupInboxController from "./controllers/messageRelatedControllers/createGroupInbox.js";
+
+// ensure uploads folder exists
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// configure multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${req.params.userId}-${Date.now()}${ext}`);
+  },
+});
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -121,6 +138,7 @@ router.post(
 router.patch(
   "/users/:userId",
   passport.authenticate("jwt", { session: false }),
+  upload.single("profilePic"),
   updateUserController
 );
 
