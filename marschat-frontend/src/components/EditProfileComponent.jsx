@@ -1,9 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import api from "../api";
 
 export default function EditProfileComponent() {
+  const location = useLocation();
+  const userId = location.state?.userId;
   const [formData, setFormData] = useState({
+    username: "",
     bio: "",
     profilePic: null,
   });
@@ -21,31 +24,31 @@ export default function EditProfileComponent() {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      let uploadedPath = null;
+      const form = new FormData();
+      form.append("username", formData.username);
+      form.append("bio", formData.bio);
 
       if (formData.profilePic) {
-        const uploadData = new FormData();
-        uploadData.append("profilePic", formData.profilePic);
-        const uploadRes = await axios.post("/api/upload", uploadData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        uploadedPath = uploadRes.data.filePath;
+        form.append("profilePic", formData.profilePic); // multer will handle this
       }
 
-      await axios.put("/api/users/edit-profile", {
-        bio: formData.bio,
-        profilePicUrl: uploadedPath,
+      const result = await api.patch(`/users/${userId}`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
+      console.log("✅ Updated user:", result.data);
       setMessage("Profile updated successfully!");
     } catch (err) {
+      console.error(
+        "❌ Error updating profile:",
+        err.response?.data || err.message
+      );
       setMessage("Error updating profile.");
     } finally {
       setLoading(false);
@@ -70,7 +73,24 @@ export default function EditProfileComponent() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label
-              htmlFor="profilePic"
+              htmlFor="username"
+              className="block text-sm font-semibold text-red-600 uppercase mb-2"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full bg-gray-100 text-black border border-red-500 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+              placeholder="Enter your username"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="bio"
               className="block text-sm font-semibold text-red-600 uppercase mb-2"
             >
               Bio
