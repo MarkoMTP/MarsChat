@@ -73,11 +73,31 @@ export default function HomePage() {
       {/* Sidebar */}
       <aside className="hidden md:flex md:flex-col w-72 bg-white border-r shadow-lg p-5 space-y-6">
         {/* Header */}
-        <div className="border-b pb-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg p-4 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight">MarsChat</h1>
-          <p className="text-sm mt-1">
-            {user ? `Hi, ${user.data.username}` : "Loading user..."}
-          </p>
+        <div className="border-b pb-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg p-4 shadow-sm flex items-center justify-between">
+          {/* Left: user avatar + info */}
+          <div className="flex items-center gap-3">
+            <img
+              src={user?.data.profilePicUrl || "/default-avatar.png"}
+              alt="Profile"
+              className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+            />
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">
+                {user ? user.data.username : "Loading..."}
+              </h1>
+              {user?.data.bio && (
+                <p className="text-sm text-gray-100">{user.data.bio}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Right: edit button */}
+          <button
+            onClick={() => navigate("/edit/profile")}
+            className="bg-white text-red-600 font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition"
+          >
+            Edit Profile
+          </button>
         </div>
 
         {/* Scrollable content */}

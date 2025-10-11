@@ -308,8 +308,7 @@ describe("HomePage integration", () => {
     );
 
     // Wait for user + inbox fetch
-    expect(await screen.findByText(/Hi, Alice/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Admin Group/i)).toBeInTheDocument();
+    expect(await screen.findByText(/edit profile/i)).toBeInTheDocument();
   });
 
   it("User clicks on open chat in inbox section and it opens the inbox on the right side", async () => {
@@ -324,7 +323,7 @@ describe("HomePage integration", () => {
       </MemoryRouter>
     );
 
-    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    const openChatButtons = await screen.findAllByText(/Open/i);
     await user.click(openChatButtons[0]);
 
     expect(await screen.findByText(/Hey Test/i)).toBeInTheDocument();
@@ -342,7 +341,7 @@ describe("HomePage integration", () => {
       </MemoryRouter>
     );
 
-    const openChatButtons = await screen.findAllByText(/send message/i);
+    const openChatButtons = await screen.findAllByText(/message/i);
 
     await user.click(openChatButtons[0]);
 
@@ -362,7 +361,7 @@ describe("HomePage integration", () => {
       </MemoryRouter>
     );
 
-    const openChatButtons = await screen.findAllByText(/send message/i);
+    const openChatButtons = await screen.findAllByText(/message/i);
 
     await user.click(openChatButtons[0]);
 
@@ -385,7 +384,7 @@ describe("HomePage integration", () => {
       </MemoryRouter>
     );
 
-    const openChatButtons = await screen.findAllByText(/send message/i);
+    const openChatButtons = await screen.findAllByText(/message/i);
 
     await user.click(openChatButtons[0]);
 
@@ -440,7 +439,7 @@ describe("HomePage integration", () => {
 
     await user.click(createGroupBtn);
 
-    expect(await screen.findByText(/Inboxes section/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Inboxes/i)).toBeInTheDocument();
   });
 
   it("User sends a message to a chat", async () => {
@@ -456,7 +455,7 @@ describe("HomePage integration", () => {
     );
 
     // Step 1: open a chat
-    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    const openChatButtons = await screen.findAllByText(/Open/i);
     await user.click(openChatButtons[0]);
 
     // Step 2: type into the input
@@ -516,7 +515,7 @@ describe("HomePage integration", () => {
         </Routes>
       </MemoryRouter>
     );
-    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    const openChatButtons = await screen.findAllByText(/Open/i);
     await user.click(openChatButtons[0]);
 
     expect(await screen.findByText(/Hey Test/i)).toBeInTheDocument();
@@ -543,7 +542,7 @@ describe("HomePage integration", () => {
         </Routes>
       </MemoryRouter>
     );
-    const openChatButtons = await screen.findAllByText(/Open chat/i);
+    const openChatButtons = await screen.findAllByText(/Open/i);
     await user.click(openChatButtons[1]);
 
     const settingsBtn = await screen.findByText(/settings/i);

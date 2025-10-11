@@ -24,6 +24,8 @@ export default function InboxSettings({
     }
   };
 
+  console.log(inboxMembers);
+
   const handleGoBack = () => {
     setOpenSettings(false);
     setOpenChat(inbox);
@@ -64,6 +66,11 @@ export default function InboxSettings({
           Add new user
         </button>
       )}
+
+      {!inbox.isGroup &&
+        inboxMembers.map((user) => {
+          <p>{user.user.username} Hey</p>;
+        })}
 
       <button
         className="p-3 bg-sky-500 hover:bg-sky-700 rounded-lg hover:cursor-pointer"

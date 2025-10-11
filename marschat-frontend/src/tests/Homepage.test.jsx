@@ -107,7 +107,7 @@ describe("Home Page", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("MarsChat")).toBeInTheDocument();
+    expect(screen.getByText(/edit profile/i)).toBeInTheDocument();
   });
 
   it("When a user clicks the open chat button, it opens the chat in the chat box", async () => {
