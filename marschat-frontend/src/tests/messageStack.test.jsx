@@ -35,7 +35,7 @@ describe("Message stack", () => {
     );
 
     const stack = screen.getByTestId("message-stack-1");
-    expect(stack.className).toContain("flex w-full justify-start");
+    expect(stack.className).toContain("flex w-full justify-end");
     expect(screen.getByText(/test message 1/i)).toBeInTheDocument();
   });
 
