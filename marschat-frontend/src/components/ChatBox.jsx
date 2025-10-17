@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import MessageStack from "./MessageStack";
 import MessageInput from "./MessageInput";
 import InboxSettings from "./InboxSettings";
@@ -23,7 +23,6 @@ export default function ChatBox({
 }) {
   const scrollRef = useRef(null);
 
-  // fetch last seen for this inbox
   useEffect(() => {
     if (!inboxId || !fetchLastSeenMessage) return;
     (async () => {
@@ -32,32 +31,64 @@ export default function ChatBox({
     })();
   }, [inboxId, fetchLastSeenMessage, setLastSeenMessage]);
 
-  // auto-scroll to bottom when messages change
   useEffect(() => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [inboxMessages]);
 
+  // identify other user for personal chats
+  const otherUser =
+    !inbox.isGroup &&
+    inboxMembers.find((member) => member.user.id !== user.id)?.user;
+
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg border">
-      {/* Header */}
-      <header className="h-14 border-b flex items-center justify-between px-4">
-        <div className="min-w-0">
-          <h2 className="font-semibold truncate">{inboxName || "Chat"}</h2>
-          <p className="text-xs text-gray-500">
-            {Array.isArray(inboxMembers) ? inboxMembers.length : 0} members
-          </p>
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#3a0c0c] via-[#7a1b1b] to-[#a83232] rounded-2xl shadow-xl overflow-hidden text-white">
+      {/* HEADER */}
+      <header className="h-16 bg-gradient-to-r from-[#a83232] via-[#c2332b] to-[#d93c2f] flex items-center justify-between px-5 shadow-md">
+        <div className="flex items-center gap-3 min-w-0">
+          {!inbox.isGroup && (
+            <>
+              <img
+                src={otherUser?.profilePicUrl || "/default-avatar.png"}
+                alt="profile"
+                className="w-10 h-10 rounded-full border-2 border-[#ffb464] object-cover shadow-sm"
+              />
+              <div>
+                <h2 className="font-semibold text-lg truncate text-[#fff0e6]">
+                  {otherUser?.username || "User"}
+                </h2>
+                {otherUser?.bio && (
+                  <p className="text-xs text-[#ffe6cc]/70 truncate">
+                    {otherUser.bio}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+          {inbox.isGroup && (
+            <div>
+              <h2 className="font-semibold text-lg truncate text-[#fff0e6]">
+                {inboxName || "Group Chat"}
+              </h2>
+              <p className="text-xs text-[#ffe6cc]/70">
+                {Array.isArray(inboxMembers) ? inboxMembers.length : 0} members
+              </p>
+            </div>
+          )}
         </div>
         <button
           onClick={() => setOpenSettings(true)}
-          className="text-sm px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 transition"
+          className="bg-[#ffffff1a] hover:bg-[#ffffff2a] text-[#fff0e6] px-3 py-1.5 rounded-lg text-sm transition-all shadow-inner"
         >
-          Settings
+          ⚙️ Settings
         </button>
       </header>
 
-      {/* Body */}
-      <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
+      {/* BODY */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-5 space-y-3 bg-[#ffffff08] backdrop-blur-md"
+      >
         {openSetting ? (
           <InboxSettings
             inboxMembers={inboxMembers}
@@ -71,7 +102,7 @@ export default function ChatBox({
             removeUserFromInbox={removeUserFromInbox}
           />
         ) : Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {inboxMessages.map((message) => (
               <MessageStack
                 key={message.id}
@@ -82,19 +113,21 @@ export default function ChatBox({
             ))}
           </div>
         ) : (
-          <div className="h-full grid place-items-center text-sm text-gray-500">
-            No messages
+          <div className="h-full flex items-center justify-center text-[#ffe6cc]/70 text-sm italic">
+            No messages yet — start the conversation!
           </div>
         )}
       </div>
 
-      {/* Input pinned bottom */}
-      <footer className="border-t p-3 gap-4">
-        <MessageInput
-          inboxId={inboxId}
-          onSend={(msg) => onMessageSend(msg, inboxId)}
-        />
-      </footer>
+      {/* INPUT */}
+      {!openSetting && (
+        <footer className="border-t border-[#ffffff1a] bg-[#ffffff0f] p-3 backdrop-blur-md shadow-inner">
+          <MessageInput
+            inboxId={inboxId}
+            onSend={(msg) => onMessageSend(msg, inboxId)}
+          />
+        </footer>
+      )}
     </div>
   );
 }
