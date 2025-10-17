@@ -15,7 +15,7 @@ export default async function handleCreateGroup({
       adminId: userId,
     });
 
-    navigate("/");
+    navigate("/home");
   } catch (error) {
     console.error(
       "Creating inbox Error:",

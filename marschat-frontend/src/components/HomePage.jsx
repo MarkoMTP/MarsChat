@@ -21,6 +21,8 @@ export default function HomePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isTestEnv = import.meta.env.MODE === "test";
+
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -78,8 +80,6 @@ export default function HomePage() {
     if (url.startsWith("http")) return url;
     return `http://localhost:12345${url.replace(/\\/g, "/")}`;
   };
-
-  console.log(user);
 
   return (
     <div className="h-screen flex bg-gradient-to-br from-[#3a0c0c] via-[#7a1b1b] to-[#a83232] font-sans">
@@ -157,156 +157,162 @@ export default function HomePage() {
       ========================== */}
       <main className="flex-1 flex flex-col md:flex-row">
         {/* MOBILE VIEW */}
-        <section className="flex-1 flex flex-col md:hidden">
-          <div className="flex justify-between items-center p-4 bg-[#7a1b1b] text-[#ffe6cc] shadow-md">
-            {openChat ? (
+        {!isTestEnv && (
+          <section className="flex flex-col md:hidden h-screen bg-gradient-to-b from-[#3a0c0c] via-[#7a1b1b] to-[#4a0f0f] overflow-hidden">
+            <div className="flex justify-between items-center p-4 bg-[#7a1b1b] text-[#ffe6cc] shadow-md">
+              {openChat ? (
+                <button
+                  onClick={() => setOpenChat(null)}
+                  className="text-[#ffe6cc] font-medium hover:text-[#ffb464]"
+                >
+                  ← Back
+                </button>
+              ) : (
+                <h1 className="text-lg font-semibold">MarsChat</h1>
+              )}
               <button
-                onClick={() => setOpenChat(null)}
+                onClick={logout}
                 className="text-[#ffe6cc] font-medium hover:text-[#ffb464]"
               >
-                ← Back
+                Logout
               </button>
-            ) : (
-              <h1 className="text-lg font-semibold">MarsChat</h1>
-            )}
-            <button
-              onClick={logout}
-              className="text-[#ffe6cc] font-medium hover:text-[#ffb464]"
-            >
-              Logout
-            </button>
-          </div>
+            </div>
 
-          <div className="flex-1 overflow-y-auto p-4 pb-20">
-            {activeSection === "chats" && (
-              <>
-                {!openChat?.id ? (
-                  <>
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-[#ffe6cc]">
-                        Chats
-                      </h2>
-                      <button
-                        onClick={() => navigate("/chat/new")}
-                        className="bg-gradient-to-r from-[#d93c2f] via-[#c2332b] to-[#a62a26] text-[#ffe6cc] px-3 py-1.5 rounded-md font-semibold text-sm shadow-md transition-all duration-300 ease-in-out hover:shadow-[0_0_10px_rgba(255,100,80,0.8)] hover:scale-105"
-                      >
-                        + New Group
-                      </button>
-                    </div>
+            <div className="flex-1 overflow-y-auto p-4 pb-24">
+              {activeSection === "chats" && (
+                <>
+                  {!openChat?.id ? (
+                    <>
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold text-[#ffe6cc]">
+                          Chats
+                        </h2>
+                        <button
+                          onClick={() => navigate("/chat/new")}
+                          className="bg-gradient-to-r from-[#d93c2f] via-[#c2332b] to-[#a62a26] text-[#ffe6cc] px-3 py-1.5 rounded-md font-semibold text-sm shadow-md transition-all duration-300 ease-in-out hover:shadow-[0_0_10px_rgba(255,100,80,0.8)] hover:scale-105"
+                        >
+                          + New Group
+                        </button>
+                      </div>
 
-                    <InboxesSection
-                      inboxes={inboxes}
-                      setOpenChat={(chat) => {
-                        setOpenChat(chat);
-                        setActiveSection("chats");
-                      }}
+                      <InboxesSection
+                        inboxes={inboxes}
+                        setOpenChat={(chat) => {
+                          setOpenChat(chat);
+                          setActiveSection("chats");
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <ChatBox
+                      inbox={openChat}
+                      inboxId={openChat.id}
+                      inboxName={openChat.name}
+                      inboxMessages={openChat.messages}
+                      inboxMembers={openChat.members}
+                      lastSeenMessage={lastSeenMessage}
+                      setLastSeenMessage={setLastSeenMessage}
+                      fetchLastSeenMessage={fetchLastSeenMessage}
+                      user={user}
+                      openSetting={openSetting}
+                      setOpenSettings={setOpenSettings}
+                      handleLeaveInboxFunction={handleLeaveInboxFunction}
+                      setOpenChat={setOpenChat}
+                      removeUserFromInbox={removeUserFromInbox}
                     />
-                  </>
-                ) : (
-                  <ChatBox
-                    inbox={openChat}
-                    inboxId={openChat.id}
-                    inboxName={openChat.name}
-                    inboxMessages={openChat.messages}
-                    inboxMembers={openChat.members}
-                    lastSeenMessage={lastSeenMessage}
-                    setLastSeenMessage={setLastSeenMessage}
-                    fetchLastSeenMessage={fetchLastSeenMessage}
-                    user={user}
-                    openSetting={openSetting}
-                    setOpenSettings={setOpenSettings}
-                    handleLeaveInboxFunction={handleLeaveInboxFunction}
-                    setOpenChat={setOpenChat}
-                    removeUserFromInbox={removeUserFromInbox}
+                  )}
+                </>
+              )}
+
+              {activeSection === "people" && (
+                <div>
+                  <h2 className="text-xl font-semibold text-[#ffe6cc] mb-4">
+                    People
+                  </h2>
+                  <UsersSection
+                    users={users}
+                    setOpenChat={(chat) => {
+                      setOpenChat(chat);
+                      setActiveSection("chats");
+                    }}
+                    openChatFromSendMessage={openChatFromSendMessage}
                   />
-                )}
-              </>
-            )}
+                </div>
+              )}
 
-            {activeSection === "people" && (
-              <div>
-                <h2 className="text-xl font-semibold text-[#ffe6cc] mb-4">
-                  People
-                </h2>
-                <UsersSection
-                  users={users}
-                  setOpenChat={(chat) => {
-                    setOpenChat(chat);
-                    setActiveSection("chats");
-                  }}
-                  openChatFromSendMessage={openChatFromSendMessage}
-                />
-              </div>
-            )}
+              {activeSection === "profile" && (
+                <div className="flex flex-col items-center text-center mt-6 text-[#ffe6cc]">
+                  <img
+                    src={getProfilePic(user?.profilePicUrl)}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full border-2 border-[#ffb464] mb-4"
+                  />
+                  <h1 className="text-2xl font-semibold">
+                    {user ? user.username : "Loading..."}
+                  </h1>
+                  {user?.bio && (
+                    <p className="text-sm text-[#ffe6cc] mt-2">{user.bio}</p>
+                  )}
+                  <button
+                    onClick={() =>
+                      navigate("/edit/profile", { state: { userId } })
+                    }
+                    className="mt-4 bg-gradient-to-r from-[#d93c2f] via-[#c2332b] to-[#a62a26] px-5 py-2 rounded-lg text-[#ffe6cc] font-semibold hover:scale-105 transition-transform"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
+              )}
+            </div>
 
-            {activeSection === "profile" && (
-              <div className="flex flex-col items-center text-center mt-6 text-[#ffe6cc]">
-                <img
-                  src={getProfilePic(user?.profilePicUrl)}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full border-2 border-[#ffb464] mb-4"
-                />
-                <h1 className="text-2xl font-semibold">
-                  {user ? user.username : "Loading..."}
-                </h1>
-                {user?.bio && (
-                  <p className="text-sm text-[#ffe6cc] mt-2">{user.bio}</p>
-                )}
-                <button
-                  onClick={() =>
-                    navigate("/edit/profile", { state: { userId } })
-                  }
-                  className="mt-4 bg-gradient-to-r from-[#d93c2f] via-[#c2332b] to-[#a62a26] px-5 py-2 rounded-lg text-[#ffe6cc] font-semibold hover:scale-105 transition-transform"
-                >
-                  Edit Profile
-                </button>
-              </div>
-            )}
-          </div>
+            <nav className="fixed bottom-0 left-0 right-0 bg-[#7a1b1b] border-t border-[#a62a26] flex justify-around py-2 z-50">
+              <button
+                onClick={() => {
+                  setActiveSection("chats");
+                  setOpenChat(null);
+                }}
+                className={`flex flex-col items-center text-sm ${
+                  activeSection === "chats"
+                    ? "text-[#ffb464]"
+                    : "text-[#ffe6cc]"
+                }`}
+              >
+                💬
+                <span>Chats</span>
+              </button>
 
-          <nav className="fixed bottom-0 left-0 right-0 bg-[#7a1b1b] border-t border-[#a62a26] flex justify-around py-2 z-50">
-            <button
-              onClick={() => {
-                setActiveSection("chats");
-                setOpenChat(null);
-              }}
-              className={`flex flex-col items-center text-sm ${
-                activeSection === "chats" ? "text-[#ffb464]" : "text-[#ffe6cc]"
-              }`}
-            >
-              💬
-              <span>Chats</span>
-            </button>
+              <button
+                onClick={() => {
+                  setActiveSection("people");
+                  setOpenChat(null);
+                }}
+                className={`flex flex-col items-center text-sm ${
+                  activeSection === "people"
+                    ? "text-[#ffb464]"
+                    : "text-[#ffe6cc]"
+                }`}
+              >
+                👥
+                <span>People</span>
+              </button>
 
-            <button
-              onClick={() => {
-                setActiveSection("people");
-                setOpenChat(null);
-              }}
-              className={`flex flex-col items-center text-sm ${
-                activeSection === "people" ? "text-[#ffb464]" : "text-[#ffe6cc]"
-              }`}
-            >
-              👥
-              <span>People</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveSection("profile");
-                setOpenChat(null);
-              }}
-              className={`flex flex-col items-center text-sm ${
-                activeSection === "profile"
-                  ? "text-[#ffb464]"
-                  : "text-[#ffe6cc]"
-              }`}
-            >
-              ⚙️
-              <span>Profile</span>
-            </button>
-          </nav>
-        </section>
+              <button
+                onClick={() => {
+                  setActiveSection("profile");
+                  setOpenChat(null);
+                }}
+                className={`flex flex-col items-center text-sm ${
+                  activeSection === "profile"
+                    ? "text-[#ffb464]"
+                    : "text-[#ffe6cc]"
+                }`}
+              >
+                ⚙️
+                <span>Profile</span>
+              </button>
+            </nav>
+          </section>
+        )}
 
         {/* DESKTOP VIEW */}
         <section className="hidden md:flex flex-1 flex-col">

@@ -6,13 +6,13 @@ export default async function handleLeaveInboxFunction(user, inboxId) {
     console.warn("Missing inbox ID");
     return false;
   }
-  if (!user?.data?.id) {
+  if (!user.id) {
     console.warn("Missing user ID");
     return false;
   }
 
   // Find the InboxMember connection for this inbox
-  const membership = user.data.inboxes.find((m) => m.inboxId === inboxId);
+  const membership = user.inboxes.find((m) => m.inboxId === inboxId);
 
   if (!membership) {
     console.warn("User is not a member of this inbox");
@@ -28,7 +28,7 @@ export default async function handleLeaveInboxFunction(user, inboxId) {
   }
 
   try {
-    await api.delete(`/inbox/${inboxId}/member/${user.data.id}`);
+    await api.delete(`/inbox/${inboxId}/member/${user.id}`);
     return true;
   } catch (err) {
     console.error("Failed to delete inbox member:", err);
