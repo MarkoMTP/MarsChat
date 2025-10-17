@@ -1,23 +1,37 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import axios from "axios";
 import { MemoryRouter } from "react-router-dom";
 import EditProfileComponent from "../components/EditProfileComponent";
 
-global.URL.createObjectURL = vi.fn(() => "mocked-preview-url"); // ✅ MOCK FIX
+// ✅ MOCK API INSTEAD OF AXIOS
+import api from "../api";
+vi.mock("../api", () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    interceptors: { request: { use: vi.fn() } }, // prevent "interceptors" undefined error
+  },
+}));
 
-vi.mock("axios");
+// ✅ MOCK NAVIGATION
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useLocation: () => ({ state: { userId: "u1" } }),
   };
 });
+
+// ✅ MOCK FILE PREVIEW CREATION
+global.URL.createObjectURL = vi.fn(() => "mocked-preview-url");
+
 describe("EditProfileComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.setItem("token", "test-token");
   });
 
   test("renders correctly", () => {
@@ -70,8 +84,11 @@ describe("EditProfileComponent", () => {
   });
 
   test("submits form and shows success message", async () => {
-    axios.post.mockResolvedValue({ data: { filePath: "/uploads/test.png" } });
-    axios.put.mockResolvedValue({});
+    api.get.mockResolvedValue({
+      data: { id: "u1", username: "Alice", bio: "", profilePicUrl: null },
+    });
+    api.post.mockResolvedValue({ data: { filePath: "/uploads/test.png" } });
+    api.patch.mockResolvedValue({});
 
     render(
       <MemoryRouter>
@@ -95,8 +112,7 @@ describe("EditProfileComponent", () => {
   });
 
   test("shows error message on failed update", async () => {
-    // ✅ Ensure the PUT request (always called) fails
-    axios.put.mockRejectedValueOnce(new Error("Update failed"));
+    api.patch.mockRejectedValueOnce(new Error("Update failed"));
 
     render(
       <MemoryRouter>
@@ -104,7 +120,6 @@ describe("EditProfileComponent", () => {
       </MemoryRouter>
     );
 
-    // Fill something in (optional but good)
     const bioInput = screen.getByPlaceholderText(
       /Write something about yourself/i
     );
@@ -113,7 +128,6 @@ describe("EditProfileComponent", () => {
     const submitBtn = screen.getByRole("button", { name: /Save Changes/i });
     fireEvent.click(submitBtn);
 
-    // ✅ Use findByText or waitFor to allow async DOM update
     const errorMessage = await screen.findByText(/Error updating profile/i);
     expect(errorMessage).toBeInTheDocument();
   });
