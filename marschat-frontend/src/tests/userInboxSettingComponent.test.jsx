@@ -13,16 +13,32 @@ describe("UserInInboxSettingsComponent", () => {
   const inboxId = "i1";
 
   const baseUser = {
-    data: {
-      id: "u1",
-      inboxes: [
-        { inboxId: "i1", role: "ADMIN" }, // logged-in user is ADMIN in this inbox
-      ],
-    },
+    id: "u1",
+    username: "AdminUser",
+    inboxes: [
+      {
+        inboxId: "i1",
+        role: "ADMIN", // logged-in user is admin in this inbox
+      },
+      {
+        inboxId: "i2",
+        role: "MEMBER",
+      },
+    ],
   };
 
+  // ✅ Properly mocked member structure
   const member = {
-    user: { id: "u2", username: "User2" },
+    user: {
+      id: "u2",
+      username: "User2",
+      inboxes: [
+        {
+          inboxId: "i1",
+          role: "MEMBER",
+        },
+      ],
+    },
   };
 
   it("renders the member username", () => {
@@ -75,10 +91,8 @@ describe("UserInInboxSettingsComponent", () => {
 
   it("does not render Kick out if user is not admin", () => {
     const nonAdminUser = {
-      data: {
-        id: "u1",
-        inboxes: [{ inboxId: "i1", role: "MEMBER" }],
-      },
+      id: "u1",
+      inboxes: [{ inboxId: "i1", role: "MEMBER" }],
     };
 
     render(
