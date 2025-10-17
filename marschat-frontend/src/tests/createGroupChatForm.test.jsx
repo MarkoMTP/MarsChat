@@ -78,7 +78,7 @@ describe("CreateGroupForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /Create Group/i }));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/");
+      expect(mockNavigate).toHaveBeenCalledWith("/home");
     });
   });
 
