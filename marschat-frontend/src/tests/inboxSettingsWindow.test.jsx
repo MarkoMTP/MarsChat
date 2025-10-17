@@ -81,7 +81,7 @@ describe("InboxSettings (Unit Test)", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: /add new user/i })
+      screen.getByRole("button", { name: /add member/i })
     ).toBeInTheDocument();
 
     rerender(
@@ -118,7 +118,7 @@ describe("InboxSettings (Unit Test)", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /add new user/i }));
+    fireEvent.click(screen.getByRole("button", { name: /add member/i }));
 
     expect(screen.getByText("Mocked Add User Form")).toBeInTheDocument();
   });
@@ -142,7 +142,7 @@ describe("InboxSettings (Unit Test)", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /leave group chat/i }));
+    fireEvent.click(screen.getByRole("button", { name: /leave group/i }));
 
     await waitFor(() => {
       expect(mockLeave).toHaveBeenCalledWith(user, inbox.id);
@@ -169,7 +169,7 @@ describe("InboxSettings (Unit Test)", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /go back to chat/i }));
+    fireEvent.click(screen.getByRole("button", { name: /back to chat/i }));
 
     await waitFor(() => {
       expect(mockSetOpenSettings).toHaveBeenCalledWith(false);
