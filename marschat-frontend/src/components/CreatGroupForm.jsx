@@ -35,7 +35,7 @@ function CreateGroupForm() {
     handleCreateGroup({ e, choosenUsers, userId, groupName, navigate });
 
   const handleGoBack = () => {
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   return (
