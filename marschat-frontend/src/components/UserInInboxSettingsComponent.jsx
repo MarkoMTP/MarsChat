@@ -5,7 +5,7 @@ export default function UserInInboxSettingsComponent({
   setOpenSettings,
   removeUserFromInbox,
 }) {
-  const membership = user.data.inboxes.find((m) => m.inboxId === inboxId);
+  const membership = user.inboxes.find((m) => m.inboxId === inboxId);
 
   return (
     <div className="flex gap-3 ">

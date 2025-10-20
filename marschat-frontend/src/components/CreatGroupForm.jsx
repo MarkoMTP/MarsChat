@@ -25,7 +25,6 @@ function CreateGroupForm() {
     }
   }, []);
 
-  // Fetch users
   useEffect(() => {
     if (!userId) return;
     (async () => setUsers(await fetchUsers(userId)))();
@@ -39,48 +38,47 @@ function CreateGroupForm() {
   };
 
   return (
-    <div className="container">
-      <h2 className="heading"></h2>
-      <form onSubmit={handleSubmit} className="form">
+    <div className="min-h-screen bg-gradient-to-b from-red-900 via-black to-red-950 text-white flex flex-col items-center justify-center p-6">
+      <h2 className="text-3xl font-bold text-red-500 mb-6 text-center">
+        Create a New Mars Group
+      </h2>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-red-950/80 p-6 rounded-lg shadow-lg space-y-4"
+      >
         <input
           type="text"
           placeholder="Group Name"
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
           required
-          className="input"
+          className="w-full bg-black text-white border border-red-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-500"
         />
 
-        {users.map((user) => (
-          <UserBoxInGroupCreationForm
-            key={user.id}
-            user={user}
-            chosenUsers={choosenUsers}
-            setChosenUsers={setChoosenUsers}
-          ></UserBoxInGroupCreationForm>
-        ))}
+        <div className="space-y-2 max-h-60 overflow-y-auto">
+          {users.map((user) => (
+            <UserBoxInGroupCreationForm
+              key={user.id}
+              user={user}
+              chosenUsers={choosenUsers}
+              setChosenUsers={setChoosenUsers}
+            />
+          ))}
+        </div>
 
         <button
           type="submit"
-          className="bg-sky-500 
-    text-white 
-    px-4 py-2 
-    rounded-lg 
-    shadow-md 
-    hover:bg-sky-600 
-    hover:cursor-pointer
-    focus:outline-none 
-    focus:ring-2 
-    focus:ring-sky-300 
-    transition 
-    duration-200 
-    ease-in-out"
+          className="w-full bg-red-600 text-white font-semibold py-2 rounded-md shadow-md hover:bg-black focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 ease-in-out"
         >
           Create Group
         </button>
       </form>
-      <button className="go-back-btn" onClick={handleGoBack}>
-        go back
+
+      <button
+        className="mt-4 text-white border border-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 ease-in-out"
+        onClick={handleGoBack}
+      >
+        Go Back
       </button>
     </div>
   );

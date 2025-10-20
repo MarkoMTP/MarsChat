@@ -1,7 +1,7 @@
 import MessageBox from "./MessageBox";
 
 export default function MessageStack({ message, user, lastSeenMessage }) {
-  const isOwn = message.senderId === user.data.id; // safe if user is null
+  const isOwn = message.senderId === user.id; // safe if user is null
 
   return (
     <div
