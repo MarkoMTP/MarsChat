@@ -1,21 +1,21 @@
 export default function MessageBox({ message, lastSeenMessage, isOwn }) {
+  console.log(lastSeenMessage);
+
   return (
     <>
       <div
-        className={`max-w-xs px-3 py-2 rounded-lg text-sm
-        ${isOwn ? "bg-red-200 text-red" : "bg-green-200 text-gray-900"}`}
+        className={`max-w-xs px-4 py-2 rounded-xl text-sm shadow-md ${
+          isOwn
+            ? "bg-gradient-to-r from-red-600 to-red-500 text-white self-end border border-red-400"
+            : "bg-white/90 text-black border border-red-300"
+        }`}
       >
-        <p>{message.content}</p>
-
-        {isOwn === false && lastSeenMessage ? (
-          new Date(message.createdAt) < new Date(lastSeenMessage.createdAt) ? (
-            <p>✓✓</p>
-          ) : (
-            <p>✓</p>
-          )
-        ) : (
-          <p></p>
+        {isOwn === false && (
+          <p className="text-xs font-bold text-red-600 mb-1 tracking-wide">
+            {message.sender.username}
+          </p>
         )}
+        <p>{message.content}</p>
       </div>
     </>
   );
