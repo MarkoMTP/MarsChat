@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import MessageStack from "./MessageStack";
 import MessageInput from "./MessageInput";
 import InboxSettings from "./InboxSettings";
@@ -21,6 +21,8 @@ export default function ChatBox({
   setOpenChat,
   removeUserFromInbox,
 }) {
+  const [otherUser, setOtherUser] = useState(null);
+
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -36,10 +38,20 @@ export default function ChatBox({
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [inboxMessages]);
 
-  // identify other user for personal chats
-  const otherUser =
-    !inbox.isGroup &&
-    inboxMembers.find((member) => member.user.id !== user.id)?.user;
+  useEffect(() => {
+    if (!inbox || inbox.isGroup) {
+      setOtherUser(null);
+      return;
+    }
+    if (!Array.isArray(inboxMembers)) {
+      setOtherUser(null);
+      return;
+    }
+    const foundUser = inboxMembers.find(
+      (member) => member && member.user && member.user.id !== user.id
+    )?.user;
+    setOtherUser(foundUser || null);
+  }, [inbox, inboxMembers, user]);
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-[#3a0c0c] via-[#7a1b1b] to-[#a83232] rounded-2xl shadow-xl overflow-hidden text-white">
@@ -100,6 +112,7 @@ export default function ChatBox({
             setOpenChat={setOpenChat}
             setOpenSettings={setOpenSettings}
             removeUserFromInbox={removeUserFromInbox}
+            otherUser={otherUser}
           />
         ) : Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
           <div className="space-y-3">

@@ -11,6 +11,7 @@ export default function InboxSettings({
   setOpenSettings,
   inbox,
   removeUserFromInbox,
+  otherUser,
 }) {
   const [openAddUsersForm, setOpenAddUsersForm] = useState(false);
 
@@ -44,10 +45,6 @@ export default function InboxSettings({
     if (url.startsWith("http")) return url;
     return `http://localhost:12345${url.replace(/\\/g, "/")}`;
   };
-
-  const otherUser =
-    !inbox.isGroup &&
-    inboxMembers.find((member) => member.user.id !== user.id)?.user;
 
   return (
     <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-[#3a0c0c] via-[#7a1b1b] to-[#a83232] text-[#fff0e6] p-6 rounded-2xl shadow-2xl overflow-y-auto">
