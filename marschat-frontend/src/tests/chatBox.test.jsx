@@ -36,24 +36,36 @@ describe("Chat Box", () => {
         content: "message 1",
         createdAt: "2024-11-20T12:33:00Z",
         senderId: "1",
+        sender: {
+          username: "Marko",
+        },
       },
       {
         id: "2",
         content: "message 2",
         createdAt: "2024-11-20T12:35:00Z",
         senderId: "2",
+        sender: {
+          username: "Marko",
+        },
       },
       {
         id: "3",
         content: "message 3",
         createdAt: "2024-11-20T12:37:00Z",
         senderId: "1",
+        sender: {
+          username: "Marko",
+        },
       },
       {
         id: "4",
         content: "test message 4",
         createdAt: "2024-11-20T12:40:00Z",
         senderId: "2",
+        sender: {
+          username: "Marko",
+        },
       },
     ];
 
@@ -101,8 +113,22 @@ describe("Chat Box", () => {
     const inboxName = "Inbox Name";
     const user = { id: "1", username: "Test 1" };
     const inboxMessages = [
-      { id: "1", content: "test message 1", senderId: "1" },
-      { id: "2", content: "test message 2", senderId: "2" },
+      {
+        id: "1",
+        content: "test message 1",
+        senderId: "1",
+        sender: {
+          username: "Marko",
+        },
+      },
+      {
+        id: "2",
+        content: "test message 2",
+        senderId: "2",
+        sender: {
+          username: "Marko",
+        },
+      },
     ];
     const inboxMembers = [
       { user: { id: "1", username: "test 1" } },

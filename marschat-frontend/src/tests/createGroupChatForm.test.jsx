@@ -91,6 +91,6 @@ describe("CreateGroupForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /go back/i }));
 
-    expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
+    expect(mockNavigate).toHaveBeenCalledWith("/home", { replace: true });
   });
 });

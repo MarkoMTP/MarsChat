@@ -49,18 +49,27 @@ describe("Home Page", () => {
                 senderId: "1",
                 inboxId: "a",
                 createdAt: "2024-11-20T12:35:00Z",
+                sender: {
+                  username: "Marko",
+                },
               },
               {
                 content: "Hey Marko!",
                 senderId: "2",
                 inboxId: "a",
                 createdAt: "2024-11-20T12:36:00Z",
+                sender: {
+                  username: "Marko",
+                },
               },
               {
                 content: "Hey Rob!",
                 senderId: "1",
                 inboxId: "a",
                 createdAt: "2024-11-20T12:37:00Z",
+                sender: {
+                  username: "Marko",
+                },
               },
             ],
             lastMsgAt: {

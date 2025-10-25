@@ -11,6 +11,9 @@ describe("Message stack", () => {
       content: "test message 1",
       createdAt: "2024-11-20T12:33:00Z",
       senderId: "1", // UTC time
+      sender: {
+        username: "Marko",
+      },
     };
 
     const user = {
@@ -45,6 +48,9 @@ describe("Message stack", () => {
       content: "test message 1",
       createdAt: "2024-11-20T12:33:00Z",
       senderId: "1", // UTC time
+      sender: {
+        username: "Marko",
+      },
     };
 
     const user = {
