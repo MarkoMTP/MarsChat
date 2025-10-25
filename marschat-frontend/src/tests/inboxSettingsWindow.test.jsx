@@ -37,16 +37,25 @@ describe("InboxSettings (Unit Test)", () => {
     { user: { id: "2", username: "test 2" } },
   ];
 
-  const makeUser = () => ({
-    data: {
-      id: "3",
-      username: "test 3",
-    },
-  });
+  const otherUser = {
+    id: "4",
+    username: "otheruser",
+    inboxes: [
+      { id: "1", name: "inbox1" },
+      { id: "2", name: "inbox2" },
+    ],
+  };
+
+  const user = {
+    id: "3",
+    username: "test 3",
+    inboxes: [
+      { id: "1", name: "inbox1" },
+      { id: "2", name: "inbox2" },
+    ],
+  };
 
   it("renders all members as child components", () => {
-    const user = makeUser();
-
     render(
       <InboxSettings
         inboxMembers={inboxMembers}
@@ -57,6 +66,7 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={vi.fn()}
         inbox={inbox}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
       />
     );
 
@@ -65,8 +75,6 @@ describe("InboxSettings (Unit Test)", () => {
   });
 
   it("shows 'Add new user' button only when inbox is a group", () => {
-    const user = makeUser();
-
     const { rerender } = render(
       <InboxSettings
         inboxMembers={[]}
@@ -77,6 +85,8 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={vi.fn()}
         inbox={{ ...inbox, isGroup: true }}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
+        currentInboxRole={"ADMIN"}
       />
     );
 
@@ -94,6 +104,7 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={vi.fn()}
         inbox={{ ...inbox, isGroup: false }}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
       />
     );
 
@@ -103,8 +114,6 @@ describe("InboxSettings (Unit Test)", () => {
   });
 
   it("renders AddNewUsersToGroup form when 'Add new user' is clicked", () => {
-    const user = makeUser();
-
     render(
       <InboxSettings
         inboxMembers={[]}
@@ -115,6 +124,8 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={vi.fn()}
         inbox={inbox}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
+        currentInboxRole={"ADMIN"}
       />
     );
 
@@ -127,7 +138,6 @@ describe("InboxSettings (Unit Test)", () => {
     const mockLeave = vi.fn().mockResolvedValue(true);
     const mockSetOpenChat = vi.fn();
     const mockSetOpenSettings = vi.fn();
-    const user = makeUser();
 
     render(
       <InboxSettings
@@ -139,6 +149,7 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={mockSetOpenSettings}
         inbox={inbox}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
       />
     );
 
@@ -154,7 +165,6 @@ describe("InboxSettings (Unit Test)", () => {
   it("calls setOpenSettings(false) and setOpenChat(inbox) when 'Go back to chat' is clicked", async () => {
     const mockSetOpenChat = vi.fn();
     const mockSetOpenSettings = vi.fn();
-    const user = makeUser();
 
     render(
       <InboxSettings
@@ -166,6 +176,7 @@ describe("InboxSettings (Unit Test)", () => {
         setOpenSettings={mockSetOpenSettings}
         inbox={inbox}
         removeUserFromInbox={vi.fn()}
+        otherUser={otherUser}
       />
     );
 

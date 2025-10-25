@@ -30,7 +30,7 @@ export default function HomePage() {
   const [openSetting, setOpenSettings] = useState(false);
   const [openChat, setOpenChat] = useState(null);
   const [lastSeenMessage, setLastSeenMessage] = useState(null);
-  const [buttonPressed, setButtonPressed] = useState(0);
+  const [currentInboxRole, setCurrentInboxRole] = useState(null);
 
   // mobile navigation state
   const [activeSection, setActiveSection] = useState("chats");
@@ -68,12 +68,19 @@ export default function HomePage() {
 
   useEffect(() => {
     loadInboxes();
-  }, [location.key, buttonPressed]);
+  }, [location.key]);
 
   useEffect(() => {
     if (!userId) return;
     (async () => setUsers(await fetchUsers(userId)))();
   }, [userId]);
+
+  useEffect(() => {
+    if (!user || !openChat?.id) return setCurrentInboxRole(null);
+    setCurrentInboxRole(
+      user.inboxes.find((m) => m.inboxId === openChat.id).role
+    );
+  }, [user, openChat]);
 
   // Helper for image URL
   const getProfilePic = (url) => {
@@ -130,8 +137,6 @@ export default function HomePage() {
               users={users}
               setOpenChat={setOpenChat}
               openChatFromSendMessage={openChatFromSendMessage}
-              setButtonPressed={setButtonPressed}
-              buttonPressed={buttonPressed}
             />
           </div>
 
@@ -222,6 +227,7 @@ export default function HomePage() {
                       handleLeaveInboxFunction={handleLeaveInboxFunction}
                       setOpenChat={setOpenChat}
                       removeUserFromInbox={removeUserFromInbox}
+                      currentInboxRole={currentInboxRole}
                     />
                   )}
                 </>
@@ -239,8 +245,6 @@ export default function HomePage() {
                       setActiveSection("chats");
                     }}
                     openChatFromSendMessage={openChatFromSendMessage}
-                    setButtonPressed={setButtonPressed}
-                    buttonPressed={buttonPressed}
                   />
                 </div>
               )}
@@ -338,6 +342,7 @@ export default function HomePage() {
                 handleLeaveInboxFunction={handleLeaveInboxFunction}
                 setOpenChat={setOpenChat}
                 removeUserFromInbox={removeUserFromInbox}
+                currentInboxRole={currentInboxRole}
               />
             ) : (
               <div className="h-full grid place-items-center text-center text-[#ffe6cc]">

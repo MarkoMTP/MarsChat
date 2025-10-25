@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddNewUsersToGroup from "./AddNewUsersForm";
 import UserInInboxSettingsComponent from "./UserInInboxSettingsComponent";
 
@@ -12,6 +12,7 @@ export default function InboxSettings({
   inbox,
   removeUserFromInbox,
   otherUser,
+  currentInboxRole,
 }) {
   const [openAddUsersForm, setOpenAddUsersForm] = useState(false);
 
@@ -45,7 +46,6 @@ export default function InboxSettings({
     if (url.startsWith("http")) return url;
     return `http://localhost:12345${url.replace(/\\/g, "/")}`;
   };
-  const membership = user.inboxes.find((m) => m.inboxId === inboxId);
 
   return (
     <div className="flex flex-col items-center w-full h-full bg-gradient-to-b from-[#3a0c0c] via-[#7a1b1b] to-[#a83232] text-[#fff0e6] p-6 rounded-2xl shadow-2xl overflow-y-auto">
@@ -80,13 +80,13 @@ export default function InboxSettings({
               />
             ))}
           </div>
-          {membership.role === "ADMIN" && (
+          {currentInboxRole === "ADMIN" && (
             <div className="flex justify-center mt-6">
               <button
                 className="px-5 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-lg font-medium transition shadow-lg hover:shadow-[0_0_15px_rgba(34,197,94,0.6)]"
                 onClick={() => setOpenAddUsersForm(true)}
               >
-                ➕ Add Member
+                Add Member
               </button>
             </div>
           )}

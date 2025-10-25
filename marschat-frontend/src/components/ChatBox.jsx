@@ -20,6 +20,7 @@ export default function ChatBox({
   setError,
   setOpenChat,
   removeUserFromInbox,
+  currentInboxRole,
 }) {
   const [otherUser, setOtherUser] = useState(null);
 
@@ -113,6 +114,7 @@ export default function ChatBox({
             setOpenSettings={setOpenSettings}
             removeUserFromInbox={removeUserFromInbox}
             otherUser={otherUser}
+            currentInboxRole={currentInboxRole}
           />
         ) : Array.isArray(inboxMessages) && inboxMessages.length > 0 ? (
           <div className="space-y-3">
