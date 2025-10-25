@@ -8,19 +8,17 @@ export default function UserInInboxSettingsComponent({
   const membership = user.inboxes.find((m) => m.inboxId === inboxId);
 
   return (
-    <div className="flex gap-3 ">
-      {" "}
-      <p key={member.user.id} className="color-black">
+    <div className="flex justify-between items-center gap-3 bg-red-900 bg-opacity-30 p-3 rounded-lg transition duration-300 hover:bg-red-800">
+      <p key={member.user.id} className="text-white font-medium">
         {member.user.username}
       </p>
       {membership.role === "ADMIN" && (
         <button
-          className="bg-red-500 p-2 hover:bg-red-700 hover:cursor-pointer  rounded-lg"
+          className="bg-red-600 p-2 rounded-lg hover:bg-red-800 hover:cursor-pointer transition duration-300 text-white"
           onClick={() =>
             removeUserFromInbox(member.user.id, inboxId, setOpenSettings)
           }
         >
-          {" "}
           Kick out
         </button>
       )}
