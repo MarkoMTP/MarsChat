@@ -9,15 +9,16 @@ dotenv.config();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // for local dev
-      "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app", // your deployed frontend
-      "https://mars-chat.vercel.app", // optional, if you plan to use the main domain
+      "http://localhost:5173",
+      "https://mars-chat.vercel.app",
+      "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app",
     ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+app.options("*", cors());
 
 const app = express();
 app.use(cors());
@@ -50,8 +51,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 12345;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
 
 export default app;
