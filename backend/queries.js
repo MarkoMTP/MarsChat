@@ -66,9 +66,13 @@ export async function updateUser(userId, username, bio, profilePicUrl) {
 export async function getAllOtherUsers(userId) {
   return await prisma.user.findMany({
     where: {
-      NOT: {
-        id: userId,
-      },
+      id: { not: userId },
+    },
+    select: {
+      id: true,
+      username: true,
+      bio: true,
+      profilePicUrl: true,
     },
   });
 }
@@ -201,6 +205,7 @@ export async function getInboxesForUser(userId) {
     },
   });
 }
+
 // get inbox with id
 export async function getInboxById(inboxId) {
   return await prisma.inbox.findUnique({

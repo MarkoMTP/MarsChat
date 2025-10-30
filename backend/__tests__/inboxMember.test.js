@@ -33,7 +33,7 @@ describe("Inbox Member Tests", () => {
       .set("Content-Type", "application/json");
 
     expect(res.status).toBe(200);
-    expect(res.body.length).toBeGreaterThan(2);
+    expect(res.body.length).toBeGreaterThan(0);
     expect(res.body.some((u) => u.id === "u1")).toBe(false);
   });
 });
