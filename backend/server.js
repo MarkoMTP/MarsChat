@@ -21,7 +21,13 @@ if (process.env.NODE_ENV === "test") {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://marschat-frontend.vercel.app"],
+    origin: [
+      "http://localhost:5173", // for local dev
+      "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app", // your deployed frontend
+      "https://mars-chat.vercel.app", // optional, if you plan to use the main domain
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
