@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:12345",
+  baseURL: "https://marschat-backend.up.railway.app",
 });
 
 // Add the token dynamically before each request
