@@ -2,7 +2,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://marschat-backend.up.railway.app",
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
 });
 
 // Add the token dynamically before each request
