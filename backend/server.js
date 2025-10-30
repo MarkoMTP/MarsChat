@@ -6,19 +6,6 @@ import mockAuth from "./middleware/mockAuth.js";
 import passport from "./passport/passport.js";
 
 dotenv.config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// 🧠 Important: Handle form-data uploads
-// Cloudinary upload routes need this, but not globally — so don’t use express.urlencoded everywhere
-// Just keep express.json() for other routes
-
-if (process.env.NODE_ENV === "test") {
-  app.use(mockAuth);
-}
-
 app.use(
   cors({
     origin: [
@@ -31,6 +18,18 @@ app.use(
     credentials: true,
   })
 );
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// 🧠 Important: Handle form-data uploads
+// Cloudinary upload routes need this, but not globally — so don’t use express.urlencoded everywhere
+// Just keep express.json() for other routes
+
+if (process.env.NODE_ENV === "test") {
+  app.use(mockAuth);
+}
 
 app.use(passport.initialize());
 
