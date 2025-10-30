@@ -19,6 +19,13 @@ if (process.env.NODE_ENV === "test") {
   app.use(mockAuth);
 }
 
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://marschat-frontend.vercel.app"],
+    credentials: true,
+  })
+);
+
 app.use(passport.initialize());
 
 // 🧠 If you still use local uploads (development only):
