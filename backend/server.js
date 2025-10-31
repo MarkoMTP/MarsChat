@@ -11,6 +11,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://mars-chat.vercel.app",
   "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app",
+  "https://mars-chat-3ntvmaphm-markomtps-projects.vercel.app",
 ];
 
 app.use(
