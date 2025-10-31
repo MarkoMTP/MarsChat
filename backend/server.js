@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import router from "./index.js";
 import mockAuth from "./middleware/mockAuth.js";
 import passport from "./passport/passport.js";
+const app = express();
 
 dotenv.config();
 const allowedOrigins = [
@@ -15,8 +16,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like curl or Postman)
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // allow Postman, curl
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
@@ -26,13 +26,11 @@ app.use(
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204, // ✅ important for Railway/HTTP2 proxies
   })
 );
 
-// ✅ optional but safer: handle preflight requests globally
-app.options("*", cors());
-
-const app = express();
 app.use(express.json());
 
 // 🧠 Important: Handle form-data uploads
@@ -44,13 +42,6 @@ if (process.env.NODE_ENV === "test") {
 }
 
 app.use(passport.initialize());
-
-// 🧠 If you still use local uploads (development only):
-// import path from "path";
-// import { fileURLToPath } from "url";
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ All routes
 app.use("/", router);
