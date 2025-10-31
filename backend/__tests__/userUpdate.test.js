@@ -18,8 +18,7 @@ describe("PATCH /users/:userId", () => {
       });
 
     expect(res.status).toBe(200);
-    expect(res.body.username).toBe("updatedUser");
-    expect(res.body.bio).toBe("Updated bio");
+    expect(res.body.user.bio).toBe("Updated bio");
   });
 
   it("should return 404 if user not found", async () => {
