@@ -6,22 +6,33 @@ import mockAuth from "./middleware/mockAuth.js";
 import passport from "./passport/passport.js";
 
 dotenv.config();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mars-chat.vercel.app",
+  "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://mars-chat.vercel.app",
-      "https://mars-chat-imiz9x4xn-markomtps-projects.vercel.app",
-    ],
+    origin: function (origin, callback) {
+      // allow requests with no origin (like curl or Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn("❌ CORS blocked request from:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// ✅ optional but safer: handle preflight requests globally
 app.options("*", cors());
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
 // 🧠 Important: Handle form-data uploads
