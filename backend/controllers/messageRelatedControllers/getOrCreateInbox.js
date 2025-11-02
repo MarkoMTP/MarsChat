@@ -16,17 +16,57 @@ export default async function getOrCreateInbox(req, res) {
     const user = await findUserById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const inbox = await prisma.$transaction(async (tx) => {
-      // 1) Try to find existing DM that has exactly these two members
-      const existing = await tx.inbox.findFirst({
-        where: {
-          isGroup: false,
-          AND: [
-            { members: { some: { userId: requesterId } } },
-            { members: { some: { userId } } },
-            { members: { every: { userId: { in: [requesterId, userId] } } } },
-          ],
+    let inbox;
+
+    // Try to find existing inbox
+    const existing = await prisma.inbox.findFirst({
+      where: {
+        isGroup: false,
+        AND: [
+          { members: { some: { userId: requesterId } } },
+          { members: { some: { userId } } },
+          { members: { every: { userId: { in: [requesterId, userId] } } } },
+        ],
+      },
+      include: {
+        members: {
+          select: {
+            id: true,
+            userId: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                bio: true,
+                profilePicUrl: true,
+              },
+            },
+          },
         },
+        messages: {
+          include: { sender: { select: { id: true, username: true } } },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    if (existing) {
+      inbox = { ...existing, isNew: false };
+    } else {
+      // Create new inbox
+      const created = await prisma.inbox.create({
+        data: { isGroup: false, name: user.username },
+      });
+
+      await prisma.inboxMember.createMany({
+        data: [
+          { inboxId: created.id, userId: requesterId },
+          { inboxId: created.id, userId },
+        ],
+      });
+
+      const newInbox = await prisma.inbox.findUnique({
+        where: { id: created.id },
         include: {
           members: {
             select: {
@@ -43,38 +83,16 @@ export default async function getOrCreateInbox(req, res) {
             },
           },
           messages: {
-            include: {
-              sender: { select: { id: true, username: true } },
-            },
-            orderBy: { createdAt: "asc" }, // optional: chronological
-          },
-        },
-      });
-      if (existing) return existing;
-
-      // 2) Create inbox + both memberships atomically
-      const created = await tx.inbox.create({
-        data: { isGroup: false, name: user.username },
-      });
-
-      await tx.inboxMember.createMany({
-        data: [
-          { inboxId: created.id, userId: requesterId },
-          { inboxId: created.id, userId },
-        ],
-      });
-
-      return tx.inbox.findUnique({
-        where: { id: created.id },
-        include: {
-          members: true,
-          messages: {
+            include: { sender: { select: { id: true, username: true } } },
             orderBy: { createdAt: "asc" },
           },
         },
       });
-    });
 
+      inbox = { ...newInbox, isNew: true };
+    }
+
+    console.log("FINAL inbox response:", inbox);
     return res.status(200).json(inbox);
   } catch (err) {
     console.error("Error getting the inbox:", err);
