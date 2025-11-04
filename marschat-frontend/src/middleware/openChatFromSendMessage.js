@@ -11,10 +11,9 @@ export default async function openChatFromSendMessage(
     if (data.isNew === true) {
       // Create a simple floating notification
       const notif = document.createElement("div");
-      notif.textContent =
-        "✅ New inbox created. Please click again to open the chat.";
+      notif.textContent = "✅ New inbox created.";
       notif.style.position = "fixed";
-      notif.style.bottom = "20px";
+      notif.style.bottom = "50%";
       notif.style.left = "50%";
       notif.style.transform = "translateX(-50%)";
       notif.style.backgroundColor = "#333";
@@ -29,7 +28,7 @@ export default async function openChatFromSendMessage(
       setTimeout(() => notif.remove(), 4000);
 
       if (typeof refetchInboxes === "function") await refetchInboxes();
-      setOpenChat();
+      setOpenChat(data);
       return;
     }
 
