@@ -31,6 +31,7 @@ export default function HomePage() {
   const [openChat, setOpenChat] = useState(null);
   const [lastSeenMessage, setLastSeenMessage] = useState(null);
   const [currentInboxRole, setCurrentInboxRole] = useState(null);
+  const [isInboxLoading, setIsInboxLoading] = useState(false);
 
   // mobile navigation state
   const [activeSection, setActiveSection] = useState("chats");
@@ -75,12 +76,28 @@ export default function HomePage() {
     (async () => setUsers(await fetchUsers(userId)))();
   }, [userId]);
 
+  // Safe role assignment
   useEffect(() => {
-    if (!user || !openChat?.id) return setCurrentInboxRole(null);
-    setCurrentInboxRole(
-      user.inboxes.find((m) => m.inboxId === openChat.id).role
-    );
+    if (!user || !openChat?.id || !user.inboxes) {
+      setCurrentInboxRole(null);
+      setIsInboxLoading(false);
+      return;
+    }
+
+    const foundInbox = user.inboxes.find((m) => m.inboxId === openChat.id);
+    setCurrentInboxRole(foundInbox ? foundInbox.role : null);
+    setIsInboxLoading(false);
   }, [user, openChat]);
+
+  // ✅ Auto-refresh inboxes if chat was just created and not in user.inboxes yet
+  useEffect(() => {
+    if (
+      openChat?.id &&
+      (!user?.inboxes || !user.inboxes.some((m) => m.inboxId === openChat.id))
+    ) {
+      loadInboxes();
+    }
+  }, [openChat]);
 
   // Helper for image URL
   const getProfilePic = (url) => {
@@ -126,7 +143,14 @@ export default function HomePage() {
             <h2 className="text-sm uppercase tracking-wide text-[#ffe6cc] mb-2">
               Inboxes
             </h2>
-            <InboxesSection inboxes={inboxes} setOpenChat={setOpenChat} />
+            <InboxesSection
+              inboxes={inboxes}
+              setOpenChat={(chat) => {
+                setIsInboxLoading(true);
+                setOpenChat(chat);
+                loadInboxes(); // ✅ refresh inbox list immediately
+              }}
+            />
           </div>
 
           <div>
@@ -135,7 +159,11 @@ export default function HomePage() {
             </h2>
             <UsersSection
               users={users}
-              setOpenChat={setOpenChat}
+              setOpenChat={(chat) => {
+                setIsInboxLoading(true);
+                setOpenChat(chat);
+                loadInboxes(); // ✅ refresh inbox list immediately
+              }}
               openChatFromSendMessage={openChatFromSendMessage}
             />
           </div>
@@ -206,11 +234,25 @@ export default function HomePage() {
                       <InboxesSection
                         inboxes={inboxes}
                         setOpenChat={(chat) => {
+                          setIsInboxLoading(true);
                           setOpenChat(chat);
+                          loadInboxes(); // ✅ auto-refresh
                           setActiveSection("chats");
                         }}
                       />
                     </>
+                  ) : isInboxLoading ? (
+                    <div className="h-full grid place-items-center text-center text-[#ffe6cc] animate-pulse">
+                      <div>
+                        <div className="h-8 w-8 border-4 border-[#ffb464] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <h3 className="text-xl font-semibold tracking-wide">
+                          Loading chat...
+                        </h3>
+                        <p className="text-sm tracking-wide">
+                          Please wait a moment.
+                        </p>
+                      </div>
+                    </div>
                   ) : (
                     <ChatBox
                       inbox={openChat}
@@ -241,9 +283,12 @@ export default function HomePage() {
                   <UsersSection
                     users={users}
                     setOpenChat={(chat) => {
+                      setIsInboxLoading(true);
                       setOpenChat(chat);
+                      loadInboxes(); // ✅ auto-refresh
                       setActiveSection("chats");
                     }}
+                    fetchInboxes={fetchInboxes}
                     openChatFromSendMessage={openChatFromSendMessage}
                   />
                 </div>
@@ -326,7 +371,17 @@ export default function HomePage() {
         {/* DESKTOP VIEW */}
         <section className="hidden md:flex flex-1 flex-col">
           <div className="flex-1 overflow-y-auto p-6">
-            {openChat?.id ? (
+            {isInboxLoading ? (
+              <div className="h-full grid place-items-center text-center text-[#ffe6cc] animate-pulse">
+                <div>
+                  <div className="h-8 w-8 border-4 border-[#ffb464] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <h3 className="text-xl font-semibold tracking-wide">
+                    Loading chat...
+                  </h3>
+                  <p className="text-sm tracking-wide">Please wait a moment.</p>
+                </div>
+              </div>
+            ) : openChat?.id ? (
               <ChatBox
                 inbox={openChat}
                 inboxId={openChat.id}

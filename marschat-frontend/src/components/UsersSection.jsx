@@ -4,6 +4,7 @@ export default function UsersSection({
   users,
   setOpenChat,
   openChatFromSendMessage,
+  fetchInboxes,
 }) {
   return (
     <div className="space-y-3">
@@ -12,7 +13,9 @@ export default function UsersSection({
           <UserComponent
             key={user.id}
             user={user}
-            onClick={() => openChatFromSendMessage(user.id, setOpenChat)}
+            onClick={() => {
+              openChatFromSendMessage(user.id, setOpenChat, fetchInboxes);
+            }}
           />
         ))
       ) : (

@@ -1,6 +1,4 @@
 export default function MessageBox({ message, lastSeenMessage, isOwn }) {
-  console.log(lastSeenMessage);
-
   return (
     <>
       <div

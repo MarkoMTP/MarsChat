@@ -35,7 +35,7 @@ export default function EditProfileComponent() {
       form.append("bio", formData.bio);
 
       if (formData.profilePic) {
-        form.append("profilePic", formData.profilePic); // multer will handle this
+        form.append("profilePic", formData.profilePic);
       }
 
       const result = await api.patch(`/users/${userId}`, form, {
